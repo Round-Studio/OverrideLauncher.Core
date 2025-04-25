@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverrideLauncher.Core", "OverrideLauncher.Core\OverrideLauncher.Core.csproj", "{209823AC-0EBA-4568-8A76-E1F9ABF164E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverrideLauncher.Example", "OverrideLauncher.Example\OverrideLauncher.Example.csproj", "{567439DA-C9F7-4307-9B39-A46AB14E0120}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{209823AC-0EBA-4568-8A76-E1F9ABF164E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{209823AC-0EBA-4568-8A76-E1F9ABF164E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{209823AC-0EBA-4568-8A76-E1F9ABF164E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{209823AC-0EBA-4568-8A76-E1F9ABF164E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{567439DA-C9F7-4307-9B39-A46AB14E0120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{567439DA-C9F7-4307-9B39-A46AB14E0120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{567439DA-C9F7-4307-9B39-A46AB14E0120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{567439DA-C9F7-4307-9B39-A46AB14E0120}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
