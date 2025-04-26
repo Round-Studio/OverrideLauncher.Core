@@ -28,10 +28,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="150px-Bookshelf_JE4_BE2.png">
+      <None Update=".nuget\logo.png">
         <Pack>True</Pack>
-        <PackagePath></PackagePath>
+        <PackagePath>\</PackagePath>
       </None>
     </ItemGroup>
-
 </Project>
