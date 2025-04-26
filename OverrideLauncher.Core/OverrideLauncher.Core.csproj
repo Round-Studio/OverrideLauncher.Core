@@ -11,7 +11,7 @@
         <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
         <PackageIcon>Icon.png</PackageIcon>
-        <Version>1.0.0-Alpha.01</Version>
+        <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
