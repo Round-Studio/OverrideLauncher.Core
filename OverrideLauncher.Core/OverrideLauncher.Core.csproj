@@ -9,7 +9,7 @@
       <PackageLicenseExpression>GNU</PackageLicenseExpression>
       <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
       <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+      <TargetFrameworks>net8.0</TargetFrameworks>
       <ImplicitUsings>enable</ImplicitUsings>
       <Authors>Round-Studio</Authors>
       <LangVersion>latest</LangVersion>
