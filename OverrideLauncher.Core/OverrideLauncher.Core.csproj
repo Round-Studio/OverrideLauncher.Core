@@ -16,7 +16,7 @@
       <Title>OverrideLauncher</Title>
       <Nullable>disable</Nullable>
       <GenerateDocumentationFile>False</GenerateDocumentationFile>
-      <PackageIcon>Icon.png</PackageIcon>
+      <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update=".nuget\Icon.png">
+      <None Update="icon.png">
         <Pack>True</Pack>
         <PackagePath>\</PackagePath>
       </None>
