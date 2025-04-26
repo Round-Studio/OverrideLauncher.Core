@@ -20,6 +20,7 @@ public class GenerateParameters
     {
         this.GameInfo = launchRunnerInfo.GameInstances;
         this.LaunchRunnerInfo = launchRunnerInfo;
+        GameInfo.GameCatalog = Path.GetFullPath(GameInfo.GameCatalog);
         string GameJsonPath =
             Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName, $"{GameInfo.GameName}.json");
         
@@ -67,11 +68,11 @@ public class GenerateParameters
     {
         Dictionary<string, string> Args = new Dictionary<string, string>()
         {
-            ["${natives_directory}"] = NativePath,
+            ["${natives_directory}"] = $"\"{NativePath}\"",
             ["${classpath}"] = $"\"{SplicingCPArguments()}\"",
             ["${main_class}"] = GameJsonEntry.MainClass,
-            ["${game_directory}"] = Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName),
-            ["${assets_root}"] = Path.Combine(GameInfo.GameCatalog, "assets"),
+            ["${game_directory}"] = $"\"{Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName)}\"",
+            ["${assets_root}"] = $"\"{Path.Combine(GameInfo.GameCatalog, "assets")}\"",
             ["${assets_index_name}"] = GameJsonEntry.AssetIndex.Id,
             ["${version_name}"] = GameInfo.GameName,
             ["${auth_uuid}"] = LaunchRunnerInfo.Account.UUID,
@@ -123,7 +124,9 @@ public class GenerateParameters
         var os = RuntimeInformation.OSDescription.ToLower();
         foreach (var cpitem in GameJsonEntry.Libraries)
         {
-            cp.Add(Path.Combine(librarypath, cpitem.Downloads.Artifact.Path));
+            var path = Path.GetFullPath(Path.Combine(librarypath, cpitem.Downloads.Artifact.Path.Replace("3.2.1","3.2.2")));
+            if(!cp.Contains(path)) cp.Add(path);
+            
             if (cpitem.Downloads.Classifiers != null)
             {
                 if (os.Contains("windows") && cpitem.Downloads.Classifiers.Keys.Contains("natives-windows"))
@@ -170,17 +173,20 @@ public class GenerateParameters
                     {
                         if (rule.Action == "allow")
                         {
-                            if (os.Contains("windows") && rule.Os?.Name == "windows")
+                            if (!args.Contains(rule.ToString()))
                             {
-                                if(value is string) args.Add(value.ToString());
-                            }
-                            else if (os.Contains("macos") || os.Contains("darwin") && rule.Os?.Name == "osx")
-                            {
-                                args.Add(value.ToString());
-                            }
-                            else if (os.Contains("linux") && rule.Os?.Name == "linux")
-                            {
-                                args.Add(value.ToString());
+                                if (os.Contains("windows") && rule.Os?.Name == "windows")
+                                {
+                                    if(value is string) args.Add(value.ToString());
+                                }
+                                else if (os.Contains("macos") || os.Contains("darwin") && rule.Os?.Name == "osx")
+                                {
+                                    args.Add(value.ToString());
+                                }
+                                else if (os.Contains("linux") && rule.Os?.Name == "linux")
+                                {
+                                    args.Add(value.ToString());
+                                }
                             }
                         }
                     }

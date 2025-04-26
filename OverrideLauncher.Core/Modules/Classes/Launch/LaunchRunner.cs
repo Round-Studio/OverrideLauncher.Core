@@ -25,6 +25,7 @@ public class LaunchRunner
                 RedirectStandardInput = true
             }
         };
+        File.WriteAllText("a.bat",$"\"{RunnerInfo.JavaInfo.JavaPath}\" {arg}");
         GameProcess.OutputDataReceived += (sender, args) =>
         {
             LogsOutput.Invoke(args.Data);

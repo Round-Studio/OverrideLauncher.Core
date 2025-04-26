@@ -11,9 +11,15 @@ public class FileIntegrityChecker
 {
     public class MissingFile
     {
+        public enum FileType
+        {
+            Jar,
+            Assets
+        }
         public string Path { get; set; }
         public string Url { get; set; }
         public long Size { get; set; }
+        public FileType Type { get; set; }
     }
 
     private readonly string _gamePath;
@@ -50,7 +56,8 @@ public class FileIntegrityChecker
                 {
                     Path = filePath,
                     Url = url,
-                    Size = asset.Value.Size
+                    Size = asset.Value.Size,
+                    Type = MissingFile.FileType.Assets
                 });
             }
         }
@@ -68,7 +75,8 @@ public class FileIntegrityChecker
                     {
                         Path = libraryPath,
                         Url = library.Downloads.Artifact.Url,
-                        Size = library.Downloads.Artifact.Size
+                        Size = library.Downloads.Artifact.Size,
+                        Type = MissingFile.FileType.Jar
                     });
                 }
             }
@@ -86,7 +94,8 @@ public class FileIntegrityChecker
                         {
                             Path = nativePath,
                             Url = native.Url,
-                            Size = native.Size
+                            Size = native.Size,
+                            Type = MissingFile.FileType.Jar
                         });
                     }
                 }
@@ -101,7 +110,8 @@ public class FileIntegrityChecker
             {
                 Path = clientPath,
                 Url = _version.Downloads.Client.Url,
-                Size = _version.Downloads.Client.Size
+                Size = _version.Downloads.Client.Size,
+                Type = MissingFile.FileType.Jar
             });
         }
 

@@ -372,10 +372,6 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                                     $"Failed to download {library.Key} after {maxRetries} attempts: {ex.Message}");
                                 retryQueue.Enqueue(library);
                             }
-                            else
-                            {
-                                await Task.Delay(1000 * attempt); // Exponential backoff
-                            }
                         }
                     }
 

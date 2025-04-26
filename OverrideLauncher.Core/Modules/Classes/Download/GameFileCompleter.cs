@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Downloader;
 
 public class GameFileCompleter
 {
@@ -12,17 +13,10 @@ public class GameFileCompleter
     public GameFileCompleter()
     {
     }
-
-    public async Task CompleteFilesAsync(List<FileIntegrityChecker.MissingFile> missingFiles)
+    public async Task DownloadMissingFilesAsync(List<FileIntegrityChecker.MissingFile> missingFiles)
     {
-        if (missingFiles == null || missingFiles.Count == 0)
-        {
-            ProgressCallback?.Invoke("No files to complete.", 100);
-            return;
-        }
-
-        int totalFiles = missingFiles.Count;
         int completedFiles = 0;
+        int totalFiles = missingFiles.Count;
 
         foreach (var file in missingFiles)
         {
@@ -30,33 +24,91 @@ public class GameFileCompleter
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(file.Path)!);
 
-                using (var response = await _httpClient.GetAsync(file.Url, HttpCompletionOption.ResponseHeadersRead))
+                switch (file.Type)
                 {
-                    response.EnsureSuccessStatusCode();
-
-                    long totalBytes = response.Content.Headers.ContentLength ?? 0;
-                    long downloadedBytes = 0;
-
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    using (var fileStream = new FileStream(file.Path, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        byte[] buffer = new byte[8192];
-                        int bytesRead;
-                        while ((bytesRead = await stream.ReadAsync(buffer)) > 0)
+                    case FileIntegrityChecker.MissingFile.FileType.Jar:
+                        // 使用Downloader库进行分片下载
+                        var downloadOpt = new DownloadConfiguration()
                         {
-                            await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                            downloadedBytes += bytesRead;
+                            ChunkCount = 8, // 分片数量，默认值为1
+                            ParallelDownload = true // 是否并行下载，默认值为false
+                        };
+                        DownloadService dow = new DownloadService(downloadOpt);
+                        dow.DownloadProgressChanged += (sender, args) =>
+                            ProgressCallback?.Invoke(
+                                $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}: {args.ProgressPercentage:0.##}%",
+                                args.ProgressPercentage);
+                        await dow.DownloadFileTaskAsync(file.Url, file.Path);
 
-                            // Update progress for the current file
-                            double fileProgressPercentage = totalBytes > 0 ? (double)downloadedBytes / totalBytes * 100 : 0;
-                            ProgressCallback?.Invoke($"Downloading {Path.GetFileName(file.Path)}: {fileProgressPercentage:0.##}%", fileProgressPercentage);
+                        if (!VerifyFileSize(file.Path, file.Size))
+                        {
+                            throw new Exception("Downloaded file size does not match.");
                         }
-                    }
-                }
 
-                if (!VerifyFileSize(file.Path, file.Size))
-                {
-                    throw new Exception("Downloaded file size does not match.");
+                        break;
+
+                    case FileIntegrityChecker.MissingFile.FileType.Assets:
+                        // 使用HttpClient进行普通下载
+                        using (var httpClient = new HttpClient())
+                        {
+                            ProgressCallback?.Invoke(
+                                $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}", 0);
+
+                            using (var response =
+                                   await httpClient.GetAsync(file.Url, HttpCompletionOption.ResponseHeadersRead))
+                            {
+                                response.EnsureSuccessStatusCode();
+
+                                long totalBytes = response.Content.Headers.ContentLength ?? 0;
+                                long downloadedBytes = 0;
+
+                                using (var stream = await response.Content.ReadAsStreamAsync())
+                                using (var fileStream = new FileStream(file.Path, FileMode.Create, FileAccess.Write,
+                                           FileShare.None))
+                                {
+                                    byte[] buffer = new byte[8192];
+                                    int bytesRead;
+                                    var lastProgressUpdate = DateTime.Now;
+                                    double lastPercentage = 0;
+
+                                    while ((bytesRead = await stream.ReadAsync(buffer)) > 0)
+                                    {
+                                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                                        downloadedBytes += bytesRead;
+
+                                        // 更新进度（避免频繁更新UI）
+                                        if (DateTime.Now - lastProgressUpdate > TimeSpan.FromMilliseconds(100) ||
+                                            downloadedBytes == totalBytes)
+                                        {
+                                            double percentage =
+                                                totalBytes > 0 ? (double)downloadedBytes / totalBytes * 100 : 0;
+
+                                            // 只有当进度变化较大时才更新
+                                            if (Math.Abs(percentage - lastPercentage) >= 1 ||
+                                                downloadedBytes == totalBytes)
+                                            {
+                                                ProgressCallback?.Invoke(
+                                                    $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}: {percentage:0.##}%",
+                                                    percentage
+                                                );
+                                                lastPercentage = percentage;
+                                                lastProgressUpdate = DateTime.Now;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (!VerifyFileSize(file.Path, file.Size))
+                            {
+                                throw new Exception("Downloaded file size does not match.");
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        throw new NotSupportedException($"File type {file.Type} is not supported.");
                 }
             }
             catch (Exception ex)
@@ -69,8 +121,6 @@ public class GameFileCompleter
             double overallProgressPercentage = (double)completedFiles / totalFiles * 100;
             ProgressCallback?.Invoke($"Completing files ({completedFiles}/{totalFiles})", overallProgressPercentage);
         }
-
-        ProgressCallback?.Invoke("Files completion complete.", 100);
     }
 
     private bool VerifyFileSize(string filePath, long expectedSize)
