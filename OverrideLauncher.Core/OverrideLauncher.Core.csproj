@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
       <Version>1.0.0</Version>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
     <PropertyGroup>
       <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
@@ -8,7 +9,6 @@
       <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
       <PackageLicenseExpression>GNU</PackageLicenseExpression>
       <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
-      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
       <TargetFrameworks>net8.0</TargetFrameworks>
       <ImplicitUsings>enable</ImplicitUsings>
       <Authors>Round-Studio</Authors>
@@ -16,7 +16,6 @@
       <Title>OverrideLauncher</Title>
       <Nullable>disable</Nullable>
       <GenerateDocumentationFile>False</GenerateDocumentationFile>
-      <PackageIcon>logo.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,19 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Downloader" Version="3.3.4" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove=".nuget\**" />
-      <EmbeddedResource Remove=".nuget\**" />
-      <None Remove=".nuget\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update=".nuget\logo.png">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
     </ItemGroup>
 </Project>
