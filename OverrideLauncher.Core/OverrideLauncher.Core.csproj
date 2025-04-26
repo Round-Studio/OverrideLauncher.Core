@@ -1,17 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsPackable>true</IsPackable>
-        <Title>OverrideLauncher.Core</Title>
-        <Authors>MinecraftYJQ</Authors>
-        <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
-        <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
-        <PackageIcon>Icon.png</PackageIcon>
-        <Version>1.0.0</Version>
+      <Version>1.0.0</Version>
+    </PropertyGroup>
+    <PropertyGroup>
+      <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
+      <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+      <PackageLicenseExpression>GNU</PackageLicenseExpression>
+      <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Authors>Round-Studio</Authors>
+      <LangVersion>latest</LangVersion>
+      <Title>OverrideLauncher</Title>
+      <Nullable>disable</Nullable>
+      <GenerateDocumentationFile>False</GenerateDocumentationFile>
+      <PackageIcon>Icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
