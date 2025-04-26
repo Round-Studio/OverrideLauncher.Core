@@ -52,4 +52,4 @@ jobs:
       uses: brandedoutcast/publish-nuget@v2.5.2
       with: 
         PROJECT_FILE_PATH: OverrideLauncher.Core/OverrideLauncher.Core.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: "${{ secrets.NUGET_API_KEY }}"
