@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public class GameJsonEntry
 {
+    [JsonProperty("minecraftArguments")]
+    public string MinecraftArguments { get; set; }
+    
     [JsonProperty("arguments")]
     public Arguments Arguments { get; set; }
 
