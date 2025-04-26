@@ -6,8 +6,6 @@
     <PropertyGroup>
       <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
       <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
-      <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-      <PackageLicenseExpression>GNU</PackageLicenseExpression>
       <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
       <TargetFrameworks>net8.0</TargetFrameworks>
       <ImplicitUsings>enable</ImplicitUsings>
