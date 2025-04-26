@@ -1,4 +1,6 @@
-﻿using System.IO.Compression;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -72,13 +74,13 @@ public class GenerateParameters
             ["${assets_root}"] = Path.Combine(GameInfo.GameCatalog, "assets"),
             ["${assets_index_name}"] = GameJsonEntry.AssetIndex.Id,
             ["${version_name}"] = GameInfo.GameName,
-            ["${auth_uuid}"] = "1111",
-            ["${auth_access_token}"] = "111111111",
-            ["${user_type}"] = "msa",
+            ["${auth_uuid}"] = LaunchRunnerInfo.Account.UUID,
+            ["${auth_access_token}"] = LaunchRunnerInfo.Account.Token,
+            ["${user_type}"] = LaunchRunnerInfo.Account.AccountType,
             ["${version_type}"] = LaunchRunnerInfo.LauncherInfo,
             ["${launcher_name}"] = LaunchRunnerInfo.LauncherInfo,
             ["${launcher_version}"] = LaunchRunnerInfo.LauncherVersion,
-            ["${auth_player_name}"] = "Min"
+            ["${auth_player_name}"] = LaunchRunnerInfo.Account.UserName
         };
 
         var jvm = GetJVMArguments();
@@ -109,6 +111,8 @@ public class GenerateParameters
             }
             args.Add(tmp);
         }
+        
+        if(LaunchRunnerInfo.IsDemo) args.Add("--demo");
         return string.Join(" ", args);
     }
     private string SplicingCPArguments()

@@ -2,8 +2,11 @@
 
 public class OfflineAccountEntry : AccountEntry
 {
-    public OfflineAccountEntry()
+    public OfflineAccountEntry(string UserName)
     {
-        
+        this.AccountType = "msa";
+        this.UserName = UserName;
+        this.UUID = Guid.NewGuid().ToString();
+        this.Token = Guid.NewGuid().ToString();
     }
 }
