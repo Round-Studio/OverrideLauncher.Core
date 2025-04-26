@@ -28,7 +28,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="icon.png">
+      <Compile Remove=".nuget\**" />
+      <EmbeddedResource Remove=".nuget\**" />
+      <None Remove=".nuget\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update=".nuget\icon.png">
         <Pack>True</Pack>
         <PackagePath>\</PackagePath>
       </None>
