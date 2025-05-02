@@ -84,6 +84,7 @@ public class MicrosoftAuthenticator
         _accountEntry.Token = minecraftTokenResponse.access_token;
         _accountEntry.UserName = profileResponse.name;
         _accountEntry.UUID = profileResponse.id;
+        _accountEntry.AccountType = "msa";
 
         return _accountEntry;
     }

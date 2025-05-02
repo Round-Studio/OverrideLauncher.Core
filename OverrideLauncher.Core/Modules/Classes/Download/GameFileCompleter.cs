@@ -26,6 +26,7 @@ public class GameFileCompleter
 
                 switch (file.Type)
                 {
+                    case FileIntegrityChecker.MissingFile.FileType.LoaderJar:
                     case FileIntegrityChecker.MissingFile.FileType.Jar:
                         // 使用Downloader库进行分片下载
                         var downloadOpt = new DownloadConfiguration()
@@ -40,7 +41,7 @@ public class GameFileCompleter
                                 args.ProgressPercentage);
                         await dow.DownloadFileTaskAsync(file.Url, file.Path);
 
-                        if (!VerifyFileSize(file.Path, file.Size))
+                        if (!VerifyFileSize(file.Path, file.Size) && file.Type!=FileIntegrityChecker.MissingFile.FileType.LoaderJar)
                         {
                             throw new Exception("Downloaded file size does not match.");
                         }

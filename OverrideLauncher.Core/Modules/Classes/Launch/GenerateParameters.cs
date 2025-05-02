@@ -51,17 +51,20 @@ public class GenerateParameters
             }
         }
 
-        var dirfiles = Directory.GetFiles(NativePath);
-        foreach (var file in dirfiles)
+        try
         {
-            if (file.EndsWith(".git") || file.EndsWith(".sha1") || file.EndsWith(".LIST") || file.EndsWith(".class"))
+            var dirfiles = Directory.GetFiles(NativePath);
+            foreach (var file in dirfiles)
             {
-                File.Delete(file);
+                if (file.EndsWith(".git") || file.EndsWith(".sha1") || file.EndsWith(".LIST") || file.EndsWith(".class"))
+                {
+                    File.Delete(file);
+                }
             }
-        }
 
-        if (Directory.Exists(Path.Combine(NativePath, "META-INF")))
-            Directory.Delete(Path.Combine(NativePath, "META-INF"),true);
+            if (Directory.Exists(Path.Combine(NativePath, "META-INF")))
+                Directory.Delete(Path.Combine(NativePath, "META-INF"),true);
+        }catch{ }
     }
 
     public string SplicingArguments()
@@ -81,12 +84,34 @@ public class GenerateParameters
             ["${version_type}"] = LaunchRunnerInfo.LauncherInfo,
             ["${launcher_name}"] = LaunchRunnerInfo.LauncherInfo,
             ["${launcher_version}"] = LaunchRunnerInfo.LauncherVersion,
-            ["${auth_player_name}"] = LaunchRunnerInfo.Account.UserName
+            ["${auth_player_name}"] = LaunchRunnerInfo.Account.UserName,
+            ["${user_properties}"] = "{}",
+        };
+        
+        List<string> RequiredJVMArgs = new()
+        {
+            "-Djava.library.path=${natives_directory}",
+            "-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}",
+            "-Dio.netty.native.workdir=${natives_directory}",
+            "-Djna.tmpdir=${natives_directory}",
+            "-cp",
+            "${classpath}",
+            "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow"
         };
 
         var jvm = GetJVMArguments();
         var game = GetGameArguments();
         var args = new List<string>();
+        
+        if (!game.Contains("net.minecraft.client.main.Main") && !jvm.Contains("net.minecraft.client.main.Main"))
+        {
+            jvm.Add("${main_class}");
+        }
+        
+        RequiredJVMArgs.ForEach(x =>
+        {
+            if (!jvm.Contains(x)) jvm.Add(x);
+        });
         
         foreach (var item in jvm)
         {
@@ -124,10 +149,19 @@ public class GenerateParameters
         var os = RuntimeInformation.OSDescription.ToLower();
         foreach (var cpitem in GameJsonEntry.Libraries)
         {
+            if (cpitem.Downloads == null)
+            {
+                var rpath = FileHelper.GetJarFilePath(cpitem.Name);
+                var path = Path.GetFullPath(Path.Combine(librarypath, rpath));
+           
+                cp.Add(path);
+                continue;
+            };
+            
             if (cpitem.Downloads.Artifact != null)
             {
-                var path = Path.GetFullPath(Path.Combine(librarypath, cpitem.Downloads.Artifact.Path.Replace("3.2.1","3.2.2")));
-                if(!cp.Contains(path)) cp.Add(path);
+                var path = Path.GetFullPath(Path.Combine(librarypath, Path.Combine(librarypath,cpitem.Downloads.Artifact.Path).Replace("3.2.1","3.2.2")));
+                if (!cp.Contains(path)) cp.Add(path);
             }
             
             if (cpitem.Downloads.Classifiers != null)
@@ -159,12 +193,6 @@ public class GenerateParameters
         var jvmArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
-
-        if (GameJsonEntry.Arguments == null)
-        {
-            args.Add("-cp ${classpath}");
-            return args;
-        };
 
         foreach (var jvmItem in GameJsonEntry.Arguments.Jvm)
         {
@@ -202,6 +230,7 @@ public class GenerateParameters
                 }
             }
         }
+        
         return args;
     }
     private List<string> GetGameArguments()
@@ -209,7 +238,6 @@ public class GenerateParameters
         var gameArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
-        args.Add("${main_class}");
 
         if (GameJsonEntry.Arguments == null)
         {

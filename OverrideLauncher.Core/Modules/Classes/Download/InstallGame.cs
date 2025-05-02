@@ -66,10 +66,19 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         public AssetsEntry.RootObject Assets { get; set; }
         public int DownloadThreadsCount { get; set; } = 64;
         public DownloadVersionInfoEntry VersionInfo { get; private set; }
+        private string ID = null;
 
-        public InstallGame(GameVersion GameVersion)
+        public InstallGame(GameVersion GameVersion,string InstallName = null)
         {
-            VersionInfo = new DownloadVersionInfoEntry { Version = GameVersion };
+            VersionInfo = new DownloadVersionInfoEntry { Version = GameVersion,InstallName = InstallName};
+            if (!string.IsNullOrEmpty(InstallName))
+            {
+                ID = InstallName;
+            }
+            else
+            {
+                ID = VersionInfo.Version.Id;
+            }
         }
 
         public async Task<string> LoadGameJsonAsync()
@@ -87,12 +96,12 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         {
             if (!Directory.Exists(GamePath)) Directory.CreateDirectory(GamePath);
             if (!Directory.Exists(Path.Combine(GamePath, "versions"))) Directory.CreateDirectory(Path.Combine(GamePath, "versions"));
-            if (!Directory.Exists(Path.Combine(GamePath, "versions", VersionInfo.Version.Id)))
-                Directory.CreateDirectory(Path.Combine(GamePath, "versions", VersionInfo.Version.Id));
+            if (!Directory.Exists(Path.Combine(GamePath, "versions", ID)))
+                Directory.CreateDirectory(Path.Combine(GamePath, "versions", ID));
 
             ProgressCallback?.Invoke("LoadConfigs...", 5);
             var versionjson = await LoadGameJsonAsync();
-            File.WriteAllText(Path.Combine(GamePath, "versions", VersionInfo.Version.Id, $"{VersionInfo.Version.Id}.json"), versionjson);
+            File.WriteAllText(Path.Combine(GamePath, "versions", ID, $"{ID}.json"), versionjson);
 
             ProgressCallback?.Invoke("DownloadJsons...", 10);
             VersionInfo.VersionAssetsJsonURL = VersionInfo.GameJsonEntry.AssetIndex.Url;
@@ -507,8 +516,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
 
         public async Task DownloadSubstance(string GamePath)
         {
-            var substancePath = Path.Combine(GamePath, "versions", VersionInfo.Version.Id,
-                $"{VersionInfo.Version.Id}.jar");
+            var substancePath = Path.Combine(GamePath, "versions", ID,
+                $"{ID}.jar");
             var url = VersionInfo.GameJsonEntry.Downloads.Client.Url;
 
             // Ensure directory exists

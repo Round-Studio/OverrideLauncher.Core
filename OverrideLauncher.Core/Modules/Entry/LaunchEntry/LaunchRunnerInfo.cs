@@ -13,4 +13,5 @@ public class LaunchRunnerInfo
     public string LauncherInfo { get; set; }
     public string LauncherVersion { get; set; }
     public bool IsDemo { get; set; } = false;
+    public List<string> JvmArgs { get; set; } = new List<string>();
 }

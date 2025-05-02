@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
+using OverrideLauncher.Core.Modules.Classes;
 using OverrideLauncher.Core.Modules.Classes.Version;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
@@ -15,6 +16,7 @@ public class FileIntegrityChecker
         public enum FileType
         {
             Jar,
+            LoaderJar,
             Assets
         }
         public string Path { get; set; }
@@ -67,6 +69,24 @@ public class FileIntegrityChecker
         var librariesPath = Path.Combine(_gamePath, "libraries");
         foreach (var library in _version.Libraries)
         {
+            if (library.Downloads == null)
+            {
+                var rpath = FileHelper.GetJarFilePath(library.Name);
+                var path = Path.GetFullPath(Path.Combine(librariesPath, rpath));
+
+                if (!File.Exists(path))
+                {
+                    missingFiles.Add(new MissingFile
+                    {
+                        Path = path,
+                        Url = $"{library.Url}{rpath}",
+                        Type = MissingFile.FileType.LoaderJar
+                    });
+                }
+                
+                continue;
+            }
+            
             if (library.Downloads?.Artifact != null)
             {
                 string libraryPath = Path.Combine(librariesPath, library.Downloads.Artifact.Path);
