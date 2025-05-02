@@ -18,7 +18,7 @@ public class GenerateParameters
     private string NativePath = "";
     public GenerateParameters(LaunchRunnerInfo launchRunnerInfo)
     {
-        this.GameInfo = launchRunnerInfo.GameInstances;
+        this.GameInfo = launchRunnerInfo.GameInstances.GameInstances;
         this.LaunchRunnerInfo = launchRunnerInfo;
         GameInfo.GameCatalog = Path.GetFullPath(GameInfo.GameCatalog);
         string GameJsonPath =

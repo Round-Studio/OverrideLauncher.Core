@@ -1,33 +1,40 @@
 ﻿using System;
 using OverrideLauncher.Core.Modules.Classes.Download;
 using OverrideLauncher.Core.Modules.Classes.Launch;
+using OverrideLauncher.Core.Modules.Classes.Version;
 using OverrideLauncher.Core.Modules.Entry.AccountEntry;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-/*
-InstallGame ins = new InstallGame(new GameVersion()
-{
-    Id = "1.18.2",
-    Url = "https://piston-meta.mojang.com/v1/packages/334b33fcba3c9be4b7514624c965256535bd7eba/1.18.2.json"
-});
+#region 安装游戏
+
+InstallGame ins = new InstallGame(InstallGame.TryingFindVersion("1.20.1").Result);
 ins.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
 ins.DownloadThreadsCount = 512;
-ins.Install(@".minecraft").Wait();
-*/
+ins.Install(@"D:/.minecraft").Wait();
 
-var ver = new GameInstancesInfo()
+#endregion
+#region 读取游戏
+
+var ver = new VersionParse(new GameInstancesInfo()
 {
+    
     GameCatalog = @"D:/.minecraft",
-    GameName = "1.16.5"
-};
+    GameName = "1.20.1"
+});
+
+#endregion
+#region 补全文件
 
 FileIntegrityChecker fileIntegrityChecker = new FileIntegrityChecker(ver);
 GameFileCompleter fileCompleter = new GameFileCompleter();
 fileCompleter.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs + "  " + progress); };
 fileCompleter.DownloadMissingFilesAsync(fileIntegrityChecker.GetMissingFiles()).Wait();
+
+#endregion
+#region 启动
 
 LaunchRunner Runner = new LaunchRunner(new LaunchRunnerInfo()
 {
@@ -44,3 +51,5 @@ LaunchRunner Runner = new LaunchRunner(new LaunchRunnerInfo()
 });
 Runner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
 Runner.Start();
+
+#endregion
