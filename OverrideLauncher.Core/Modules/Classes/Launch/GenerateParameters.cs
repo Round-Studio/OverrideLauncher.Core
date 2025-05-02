@@ -95,7 +95,7 @@ public class GenerateParameters
             {
                 if (item.Contains(arg.Key))
                 {
-                    tmp = item.Replace(arg.Key, arg.Value);
+                    tmp = tmp.Replace(arg.Key, arg.Value);
                 }
             }
             args.Add(tmp);
@@ -107,7 +107,7 @@ public class GenerateParameters
             {
                 if (item.Contains(arg.Key))
                 {
-                    tmp = item.Replace(arg.Key, arg.Value);
+                    tmp = tmp.Replace(arg.Key, arg.Value);
                 }
             }
             args.Add(tmp);
@@ -124,8 +124,11 @@ public class GenerateParameters
         var os = RuntimeInformation.OSDescription.ToLower();
         foreach (var cpitem in GameJsonEntry.Libraries)
         {
-            var path = Path.GetFullPath(Path.Combine(librarypath, cpitem.Downloads.Artifact.Path.Replace("3.2.1","3.2.2")));
-            if(!cp.Contains(path)) cp.Add(path);
+            if (cpitem.Downloads.Artifact != null)
+            {
+                var path = Path.GetFullPath(Path.Combine(librarypath, cpitem.Downloads.Artifact.Path.Replace("3.2.1","3.2.2")));
+                if(!cp.Contains(path)) cp.Add(path);
+            }
             
             if (cpitem.Downloads.Classifiers != null)
             {
@@ -156,6 +159,12 @@ public class GenerateParameters
         var jvmArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
+
+        if (GameJsonEntry.Arguments == null)
+        {
+            args.Add("-cp ${classpath}");
+            return args;
+        };
 
         foreach (var jvmItem in GameJsonEntry.Arguments.Jvm)
         {
@@ -193,8 +202,6 @@ public class GenerateParameters
                 }
             }
         }
-        
-        args.Add("${main_class}");
         return args;
     }
     private List<string> GetGameArguments()
@@ -202,22 +209,30 @@ public class GenerateParameters
         var gameArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
+        args.Add("${main_class}");
 
-        foreach (var jvmItem in GameJsonEntry.Arguments.Game)
+        if (GameJsonEntry.Arguments == null)
         {
-            if (jvmItem is string)
+            args.Add(GameJsonEntry.MinecraftArguments);
+        }
+        else
+        {
+            foreach (var jvmItem in GameJsonEntry.Arguments.Game)
             {
-                args.Add(jvmItem.ToString());
-            }else if (jvmItem is JObject ruleObject)
-            {
-                var rules = ruleObject["rules"]?.ToObject<List<Rule>>();
-                var value = ruleObject["value"];
-
-                if (rules != null && value != null)
+                if (jvmItem is string)
                 {
-                    foreach (var rule in rules)
+                    args.Add(jvmItem.ToString());
+                }else if (jvmItem is JObject ruleObject)
+                {
+                    var rules = ruleObject["rules"]?.ToObject<List<Rule>>();
+                    var value = ruleObject["value"];
+
+                    if (rules != null && value != null)
                     {
+                        foreach (var rule in rules)
+                        {
                         
+                        }
                     }
                 }
             }
