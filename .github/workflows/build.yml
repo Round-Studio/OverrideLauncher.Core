@@ -48,6 +48,9 @@ jobs:
         dotnet-version: '8.0.x'
     - name: Build OverrideLauncher.Core
       run: dotnet build OverrideLauncher.Core/OverrideLauncher.Core.csproj ${{ env.compile-flags }}
+    - name: Set Version
+      run : current_date=$(date +"%y.%m.%d.%H%M")
+            sed -i "s/\$([System.DateTime]::Now.ToString(yy.MM.dd.HHmm))/$current_date/g" OverrideLauncher.Core/OverrideLauncher.Core.csproj
     - name: Publish OverrideLauncher.Core
       uses: brandedoutcast/publish-nuget@v2.5.2
       with: 
