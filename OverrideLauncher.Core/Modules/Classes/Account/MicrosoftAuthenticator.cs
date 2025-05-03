@@ -24,11 +24,17 @@ public class CustomHttpClientHandler : HttpClientHandler
 
 public class MicrosoftAuthenticator
 {
+    public class LoginCodeEntry
+    {
+        public string URL { get; set; }
+        public string Code { get; set; }
+    }
     private readonly string _clientId;
     private readonly string _clientSecret;
     private readonly HttpClient _httpClient;
     private readonly IEnumerable<string> _scopes = new List<string> { "XboxLive.signin", "offline_access" };
     private AccountEntry _accountEntry;
+    public Action<LoginCodeEntry> Login;
 
     public MicrosoftAuthenticator(string clientId, string clientSecret = null)
     {
@@ -47,6 +53,11 @@ public class MicrosoftAuthenticator
 
         Console.WriteLine($"请在设备上输入以下代码: {deviceCodeResponse.user_code}");
         Console.WriteLine($"验证地址: {deviceCodeResponse.verification_uri}");
+        Login.Invoke(new LoginCodeEntry()
+        {
+            URL = deviceCodeResponse.verification_uri,
+            Code = deviceCodeResponse.user_code
+        });
 
         // 轮询授权状态
         var tokenResponse = await PollForToken(deviceCodeResponse.device_code);
