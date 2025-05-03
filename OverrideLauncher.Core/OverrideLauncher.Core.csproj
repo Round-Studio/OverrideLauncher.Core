@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-      <Version>1.$([System.DateTime]::Now.ToString(yy.MM.dd.HHmm))</Version>
+      <Version>$([System.DateTime]::Now.ToString(yy.MM.dd.HHmm))</Version>
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
     <PropertyGroup>
