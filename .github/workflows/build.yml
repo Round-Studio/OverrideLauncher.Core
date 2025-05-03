@@ -51,7 +51,9 @@ jobs:
     - name: Set Version
       run : |
         current_date=$(date +"%y.%m.%d.%H%M")
-        sed -i "s/<Version>[^<]*<\/Version>/<Version>$current_date<\/Version>/" OverrideLauncher.Core/OverrideLauncher.Core.csproj
+        random_number=$((RANDOM % 1000))
+        version="$current_date.$(printf "%03d" $random_number)"
+        sed -i "s/<Version>[^<]*<\/Version>/<Version>$version<\/Version>/" OverrideLauncher.Core/OverrideLauncher.Core.csproj
     - name: Publish OverrideLauncher.Core
       uses: brandedoutcast/publish-nuget@v2.5.2
       with: 
