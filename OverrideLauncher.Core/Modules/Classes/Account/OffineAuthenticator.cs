@@ -12,7 +12,7 @@ public class OffineAuthenticator
         accountEntry.UserName = username;
         accountEntry.UUID = NameToMcOfflineUUID(username).ToString();
         accountEntry.Token = NameToMcOfflineUUID(username).ToString();
-        accountEntry.AccountType = "msa";
+        accountEntry.AccountType = "off";
     }
 
     public AccountEntry Authenticator()

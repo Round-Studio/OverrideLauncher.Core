@@ -9,7 +9,7 @@ using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-var version = "1.14.3";
+var version = "1.12.2";
 var installversion = version;
 var GameCatalog = ".minecraft";
 #region 安装游戏
