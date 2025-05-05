@@ -9,8 +9,8 @@ using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-var version = "绿色版红石生电优化";
-var installversion = "1.21.1";
+var version = "b1.5";
+var installversion = "b1.5";
 #region 安装游戏
 
 /*InstallGame ins = new InstallGame(InstallGame.TryingFindVersion(installversion).Result, version);
@@ -47,7 +47,7 @@ LaunchRunner Runner = new LaunchRunner(new LaunchRunnerInfo()
         Version = "17.0.2",
         Is64Bit = true
     },
-    Account = new OfflineAccountEntry("MinecraftYJQ"),
+    Account = new OffineAuthenticator("MinecraftYJQ_").Authenticator(),
     LauncherInfo = "RMCL",
     LauncherVersion = "114",
 });

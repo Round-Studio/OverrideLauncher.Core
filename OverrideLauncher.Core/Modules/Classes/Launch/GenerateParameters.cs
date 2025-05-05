@@ -105,7 +105,7 @@ public class GenerateParameters
         
         if (!game.Contains("net.minecraft.client.main.Main") && !jvm.Contains("net.minecraft.client.main.Main"))
         {
-            jvm.Add("${main_class}");
+            game.Add("${main_class}");
         }
         
         RequiredJVMArgs.ForEach(x =>
@@ -190,6 +190,7 @@ public class GenerateParameters
 
     private List<string> GetJVMArguments()
     {
+        if(GameJsonEntry.Arguments==null) return new List<string>();
         var jvmArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
