@@ -9,21 +9,25 @@ using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-var version = "b1.5";
-var installversion = "b1.5";
+var version = "1.14.3";
+var installversion = version;
+var GameCatalog = ".minecraft";
 #region 安装游戏
 
-/*InstallGame ins = new InstallGame(InstallGame.TryingFindVersion(installversion).Result, version);
-ins.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
-ins.DownloadThreadsCount = 512;
-ins.Install(@"D:/.minecraft").Wait();*/
+if (!Directory.Exists($"{GameCatalog}/versions/{installversion}"))
+{
+    InstallGame ins = new InstallGame(InstallGame.TryingFindVersion(installversion).Result, version);
+    ins.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs + "   " + progress); };
+    ins.DownloadThreadsCount = 512;
+    ins.Install(@".minecraft").Wait();
+}
 
 #endregion
 #region 读取游戏
 
 var ver = new VersionParse(new GameInstancesInfo()
 {
-    GameCatalog = @"D:/.minecraft",
+    GameCatalog = GameCatalog,
     GameName = version
 });
 
@@ -43,7 +47,7 @@ LaunchRunner Runner = new LaunchRunner(new LaunchRunnerInfo()
     GameInstances = ver,
     JavaInfo = new JavaInfo()
     {
-        JavaPath = @"D:\MCLDownload\ext\jre-v64-220420\jdk17\bin\java.exe",
+        JavaPath = "C:\\Program Files\\Java\\jdk-22\\bin\\java.exe",
         Version = "17.0.2",
         Is64Bit = true
     },

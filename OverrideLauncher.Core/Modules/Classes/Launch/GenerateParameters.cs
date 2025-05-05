@@ -81,8 +81,8 @@ public class GenerateParameters
             ["${auth_uuid}"] = LaunchRunnerInfo.Account.UUID,
             ["${auth_access_token}"] = LaunchRunnerInfo.Account.Token,
             ["${user_type}"] = LaunchRunnerInfo.Account.AccountType,
-            ["${version_type}"] = LaunchRunnerInfo.LauncherInfo,
-            ["${launcher_name}"] = LaunchRunnerInfo.LauncherInfo,
+            ["${version_type}"] = $"\"{LaunchRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
+            ["${launcher_name}"] = $"\"{LaunchRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
             ["${launcher_version}"] = LaunchRunnerInfo.LauncherVersion,
             ["${auth_player_name}"] = LaunchRunnerInfo.Account.UserName,
             ["${user_properties}"] = "{}",
@@ -90,29 +90,30 @@ public class GenerateParameters
         
         List<string> RequiredJVMArgs = new()
         {
+            "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
             "-Djava.library.path=${natives_directory}",
             "-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}",
             "-Dio.netty.native.workdir=${natives_directory}",
             "-Djna.tmpdir=${natives_directory}",
             "-cp",
-            "${classpath}",
-            "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow"
+            "${classpath}"
         };
 
         var jvm = GetJVMArguments();
         var game = GetGameArguments();
         var args = new List<string>();
         
-        if (!game.Contains("net.minecraft.client.main.Main") && !jvm.Contains("net.minecraft.client.main.Main"))
-        {
-            game.Add("${main_class}");
-        }
-        
         RequiredJVMArgs.ForEach(x =>
         {
             if (!jvm.Contains(x)) jvm.Add(x);
         });
-        
+
+
+        if (!jvm.Contains("${main_class}") || !game.Contains("${main_class}"))
+        {
+            jvm.Add("${main_class}");
+        }
+
         foreach (var item in jvm)
         {
             var tmp = item;
@@ -125,6 +126,7 @@ public class GenerateParameters
             }
             args.Add(tmp);
         }
+
         foreach (var item in game)
         {
             var tmp = item;
@@ -137,8 +139,8 @@ public class GenerateParameters
             }
             args.Add(tmp);
         }
-        
-        if(LaunchRunnerInfo.IsDemo) args.Add("--demo");
+
+        if (LaunchRunnerInfo.IsDemo) args.Add("--demo");
         return string.Join(" ", args);
     }
     private string SplicingCPArguments()
