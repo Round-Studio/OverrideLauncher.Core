@@ -2,15 +2,15 @@
 using System.Diagnostics;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-namespace OverrideLauncher.Core.Modules.Classes.Launch;
+namespace OverrideLauncher.Core.Modules.Classes.Launch.Client;
 
-public class LaunchRunner
+public class ClientRunner
 {
     public Process GameProcess { get; set; }
     public Action<string> LogsOutput { get; set; } 
-    public LaunchRunner(LaunchRunnerInfo RunnerInfo)
+    public ClientRunner(ClientRunnerInfo RunnerInfo)
     {
-        var g = new GenerateParameters(RunnerInfo);
+        var g = new GenerateClientParameters(RunnerInfo);
         string arg = g.SplicingArguments();
         GameProcess = new Process()
         {

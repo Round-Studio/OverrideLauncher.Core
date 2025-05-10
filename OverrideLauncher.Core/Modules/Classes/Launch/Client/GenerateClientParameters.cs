@@ -8,28 +8,28 @@ using Newtonsoft.Json.Linq;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
-namespace OverrideLauncher.Core.Modules.Classes.Launch;
+namespace OverrideLauncher.Core.Modules.Classes.Launch.Client;
 
-public class GenerateParameters
+public class GenerateClientParameters
 {
     private GameJsonEntry GameJsonEntry { get; set; }
-    private GameInstancesInfo GameInfo { get; set; }
-    private LaunchRunnerInfo LaunchRunnerInfo { get; set; }
+    private ClientInstancesInfo ClientInfo { get; set; }
+    private ClientRunnerInfo ClientRunnerInfo { get; set; }
     private string NativePath = "";
-    public GenerateParameters(LaunchRunnerInfo launchRunnerInfo)
+    public GenerateClientParameters(ClientRunnerInfo clientRunnerInfo)
     {
-        this.GameInfo = launchRunnerInfo.GameInstances.GameInstances;
-        this.LaunchRunnerInfo = launchRunnerInfo;
-        GameInfo.GameCatalog = Path.GetFullPath(GameInfo.GameCatalog);
+        this.ClientInfo = clientRunnerInfo.GameInstances.ClientInstances;
+        this.ClientRunnerInfo = clientRunnerInfo;
+        ClientInfo.GameCatalog = Path.GetFullPath(ClientInfo.GameCatalog);
         string GameJsonPath =
-            Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName, $"{GameInfo.GameName}.json");
+            Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName, $"{ClientInfo.GameName}.json");
         
         if (!File.Exists(GameJsonPath))
         {
             throw new FileNotFoundException("找不到 GameJson 文件！");
         }
 
-        NativePath = Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName, "natives");
+        NativePath = Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName, "natives");
         
         string GameJson = File.ReadAllText(GameJsonPath);
         GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(GameJson);
@@ -40,7 +40,7 @@ public class GenerateParameters
         if (Directory.Exists(NativePath)) Directory.CreateDirectory(NativePath);
         foreach (var packs in NativePacks)
         {
-            var path = Path.Combine(GameInfo.GameCatalog, "libraries", packs.Path);
+            var path = Path.Combine(ClientInfo.GameCatalog, "libraries", packs.Path);
             if (File.Exists(path))
             {
                 ZipFile.ExtractToDirectory(path, NativePath,true);
@@ -74,17 +74,17 @@ public class GenerateParameters
             ["${natives_directory}"] = $"\"{NativePath}\"",
             ["${classpath}"] = $"\"{SplicingCPArguments()}\"",
             ["${main_class}"] = GameJsonEntry.MainClass,
-            ["${game_directory}"] = $"\"{Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName)}\"",
-            ["${assets_root}"] = $"\"{Path.Combine(GameInfo.GameCatalog, "assets")}\"",
+            ["${game_directory}"] = $"\"{Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName)}\"",
+            ["${assets_root}"] = $"\"{Path.Combine(ClientInfo.GameCatalog, "assets")}\"",
             ["${assets_index_name}"] = GameJsonEntry.AssetIndex.Id,
-            ["${version_name}"] = GameInfo.GameName,
-            ["${auth_uuid}"] = LaunchRunnerInfo.Account.UUID,
-            ["${auth_access_token}"] = LaunchRunnerInfo.Account.Token,
-            ["${user_type}"] = LaunchRunnerInfo.Account.AccountType,
-            ["${version_type}"] = $"\"{LaunchRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
-            ["${launcher_name}"] = $"\"{LaunchRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
-            ["${launcher_version}"] = LaunchRunnerInfo.LauncherVersion,
-            ["${auth_player_name}"] = LaunchRunnerInfo.Account.UserName,
+            ["${version_name}"] = ClientInfo.GameName,
+            ["${auth_uuid}"] = ClientRunnerInfo.Account.UUID,
+            ["${auth_access_token}"] = ClientRunnerInfo.Account.Token,
+            ["${user_type}"] = ClientRunnerInfo.Account.AccountType,
+            ["${version_type}"] = $"\"{ClientRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
+            ["${launcher_name}"] = $"\"{ClientRunnerInfo.LauncherInfo} - by:OverrideLauncher.Core\"",
+            ["${launcher_version}"] = ClientRunnerInfo.LauncherVersion,
+            ["${auth_player_name}"] = ClientRunnerInfo.Account.UserName,
             ["${user_properties}"] = "{}",
         };
         
@@ -140,14 +140,14 @@ public class GenerateParameters
             args.Add(tmp);
         }
 
-        if (LaunchRunnerInfo.IsDemo) args.Add("--demo");
-        args.Add($"--width {LaunchRunnerInfo.WindowInfo.Width}");
-        args.Add($"--height {LaunchRunnerInfo.WindowInfo.Height}");
+        if (ClientRunnerInfo.IsDemo) args.Add("--demo");
+        args.Add($"--width {ClientRunnerInfo.WindowInfo.Width}");
+        args.Add($"--height {ClientRunnerInfo.WindowInfo.Height}");
         return string.Join(" ", args);
     }
     private string SplicingCPArguments()
     {
-        var librarypath = Path.Combine(GameInfo.GameCatalog, "libraries");
+        var librarypath = Path.Combine(ClientInfo.GameCatalog, "libraries");
         var cp = new List<string>();
         var natives = new List<Artifact>();
         var os = RuntimeInformation.OSDescription.ToLower();
@@ -188,7 +188,7 @@ public class GenerateParameters
             }
         }
         UnzipNativePacks(natives);
-        cp.Add(Path.Combine(GameInfo.GameCatalog, "versions", GameInfo.GameName, $"{GameInfo.GameName}.jar"));
+        cp.Add(Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName, $"{ClientInfo.GameName}.jar"));
         return string.Join(";", cp);
     }
 

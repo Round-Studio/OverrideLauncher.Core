@@ -27,16 +27,16 @@ public class FileIntegrityChecker
 
     private readonly string _gamePath;
     private readonly AssetsEntry.RootObject _assets;
-    private readonly GameInstancesInfo _versionInfo = new();
+    private readonly ClientInstancesInfo _versionInfo = new();
     private readonly GameJsonEntry _version;
     public FileIntegrityChecker(VersionParse versionInfo)
     {
-        _gamePath = versionInfo.GameInstances.GameCatalog;
-        _versionInfo = versionInfo.GameInstances;
+        _gamePath = versionInfo.ClientInstances.GameCatalog;
+        _versionInfo = versionInfo.ClientInstances;
         
         _version = JsonConvert.DeserializeObject<GameJsonEntry>(
-            File.ReadAllText(Path.Combine(_gamePath, "versions", versionInfo.GameInstances.GameName,
-                $"{versionInfo.GameInstances.GameName}.json")));
+            File.ReadAllText(Path.Combine(_gamePath, "versions", versionInfo.ClientInstances.GameName,
+                $"{versionInfo.ClientInstances.GameName}.json")));
         _assets = JsonConvert.DeserializeObject<AssetsEntry.RootObject>(
             File.ReadAllText(Path.Combine(_gamePath, "assets", "indexes",
                 $"{_version.Assets}.json")));
