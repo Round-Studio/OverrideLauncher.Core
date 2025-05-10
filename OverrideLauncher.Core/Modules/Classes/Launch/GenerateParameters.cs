@@ -141,6 +141,8 @@ public class GenerateParameters
         }
 
         if (LaunchRunnerInfo.IsDemo) args.Add("--demo");
+        args.Add($"--width {LaunchRunnerInfo.WindowInfo.Width}");
+        args.Add($"--height {LaunchRunnerInfo.WindowInfo.Height}");
         return string.Join(" ", args);
     }
     private string SplicingCPArguments()
