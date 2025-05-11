@@ -8,6 +8,7 @@ public class FileHelper
         string[] parts = name.Split(':');
         if (parts.Length < 3 || parts.Length > 4)
         {
+            Console.WriteLine(name);
             throw new ArgumentException("Invalid Maven dependency format. Expected format: groupId:artifactId:version[:classifier]");
         }
 
