@@ -15,9 +15,11 @@ using OverrideLauncher.Core.Modules.Entry.LaunchEntry.ServerEntry;
 using OverrideLauncher.Core.Modules.Entry.ServerEntry;
 using OverrideLauncher.Core.Modules.Enum.Launch;
 
-var version = "1.17";
+var version = "1.17.1";
 var installversion = version;
 var gamedir = "D:/.minecraft";
+
+void pro(string logs, double progress) { Console.WriteLine(logs+"   "+progress); };
 
 #region 安装服务端
 
@@ -54,22 +56,22 @@ serverRunner.Start();*/
 if (!Directory.Exists(Path.Combine(gamedir,  "versions", installversion)))
 {
     InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
-    ins.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
+    ins.ProgressCallback = pro;
     ins.DownloadThreadsCount = 512;
     ins.Install(gamedir).Wait();
-}
-
-var installer = new FabricInstaller();
-var tmp = FabricInstaller.GetLoaderVersionsAsync(installversion).Result[0];
-installer.InstallFabricAsync(new FabricInstallInfo()
-{
-    GameInfo = new ClientInstancesInfo()
+    
+    var installer = new FabricInstaller();
+    var tmp = FabricInstaller.GetLoaderVersionsAsync(installversion).Result[0];
+    installer.InstallFabricAsync(new FabricInstallInfo()
     {
-        GameCatalog = gamedir,
-        GameName = version
-    },
-    FabricVersion = tmp
-}).Wait();
+        GameInfo = new ClientInstancesInfo()
+        {
+            GameCatalog = gamedir,
+            GameName = version
+        },
+        FabricVersion = tmp
+    }).Wait();
+}
 
 #endregion
 #region 读取游戏
@@ -85,7 +87,7 @@ var ver = new VersionParse(new ClientInstancesInfo()
 
 FileIntegrityChecker fileIntegrityChecker = new FileIntegrityChecker(ver);
 GameFileCompleter fileCompleter = new GameFileCompleter();
-fileCompleter.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs + "  " + progress); };
+fileCompleter.ProgressCallback = pro;
 fileCompleter.DownloadMissingFilesAsync(fileIntegrityChecker.GetMissingFiles()).Wait();
 
 #endregion
@@ -96,14 +98,14 @@ ClientRunner Runner = new ClientRunner(new ClientRunnerInfo()
     GameInstances = ver,
     JavaInfo = new JavaInfo()
     {
-        JavaPath = @"D:\MCLDownload\ext\jre-v64-220420\jdk17\bin\java.exe",
+        JavaPath = @"C:\Program Files\Java\jdk-22\bin\java.exe",
         Version = "17.0.2",
         Is64Bit = true
     },
     Account = new OffineAuthenticator("RoundStudio").Authenticator(),
     LauncherInfo = "RMCL",
     LauncherVersion = "114",
-    WindowInfo = ClientWindowSizeEnum.Fullscreen
+    WindowInfo = ClientWindowSizeEnum.Default
 });
 Runner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
 Runner.Start();

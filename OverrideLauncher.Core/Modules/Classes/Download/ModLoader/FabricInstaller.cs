@@ -150,7 +150,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download.ModLoader
                 string name = library["name"].ToString();
 
                 Console.WriteLine($"Downloading library: {name}");
-                await DownloadFile(url,
+                await DownloadFile(url+FileHelper.GetJarFilePath(name),
                     Path.Combine(_installInfo.GameInfo.GameCatalog,"libraries", FileHelper.GetJarFilePath(name)));
             }
         }
@@ -176,6 +176,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download.ModLoader
         // 下载文件
         private async Task DownloadFile(string url, string fileName)
         {
+            if (File.Exists(fileName)) return;
+            Console.WriteLine(url);
             HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             if (!response.IsSuccessStatusCode)
             {
