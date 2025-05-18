@@ -4,11 +4,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Downloader;
+using OverrideLauncher.Core.Modules.Enum.Download;
 
 public class GameFileCompleter
 {
     private readonly HttpClient _httpClient = new HttpClient();
-    public Action<string, double> ProgressCallback { get; set; }
+    public Action<DownloadStateEnum ,string, double> ProgressCallback { get; set; }
 
     public GameFileCompleter()
     {
@@ -36,8 +37,8 @@ public class GameFileCompleter
                         };
                         DownloadService dow = new DownloadService(downloadOpt);
                         dow.DownloadProgressChanged += (sender, args) =>
-                            ProgressCallback?.Invoke(
-                                $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}: {args.ProgressPercentage:0.##}%",
+                            ProgressCallback?.Invoke(DownloadStateEnum.CompletionJar,
+                                $"({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)})",
                                 args.ProgressPercentage);
                         await dow.DownloadFileTaskAsync(file.Url, file.Path);
 
@@ -52,8 +53,8 @@ public class GameFileCompleter
                         // 使用HttpClient进行普通下载
                         using (var httpClient = new HttpClient())
                         {
-                            ProgressCallback?.Invoke(
-                                $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}", 0);
+                            ProgressCallback?.Invoke(DownloadStateEnum.CompletionAssets,
+                                $"({completedFiles + 1}/{totalFiles})", 0);
 
                             using (var response =
                                    await httpClient.GetAsync(file.Url, HttpCompletionOption.ResponseHeadersRead))
@@ -88,8 +89,8 @@ public class GameFileCompleter
                                             if (Math.Abs(percentage - lastPercentage) >= 1 ||
                                                 downloadedBytes == totalBytes)
                                             {
-                                                ProgressCallback?.Invoke(
-                                                    $"Downloading ({completedFiles + 1}/{totalFiles}) {Path.GetFileName(file.Path)}: {percentage:0.##}%",
+                                                ProgressCallback?.Invoke(DownloadStateEnum.CompletionAssets,
+                                                    $"({completedFiles + 1}/{totalFiles})",
                                                     percentage
                                                 );
                                                 lastPercentage = percentage;
@@ -120,7 +121,7 @@ public class GameFileCompleter
 
             completedFiles++;
             double overallProgressPercentage = (double)completedFiles / totalFiles * 100;
-            ProgressCallback?.Invoke($"Completing files ({completedFiles}/{totalFiles})", overallProgressPercentage);
+            ProgressCallback?.Invoke(DownloadStateEnum.CompletionSuccess,$"({completedFiles}/{totalFiles})", overallProgressPercentage);
         }
     }
 

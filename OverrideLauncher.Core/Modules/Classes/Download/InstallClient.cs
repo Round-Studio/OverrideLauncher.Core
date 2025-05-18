@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
+using OverrideLauncher.Core.Modules.Enum.Download;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace OverrideLauncher.Core.Modules.Classes.Download
@@ -19,7 +20,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         private static HttpClient _httpClient = new HttpClient();
         public AssetsEntry.RootObject Assets { get; set; }
         public int DownloadThreadsCount { get; set; } = 64;
-        public Action<string, double> ProgressCallback { get; set; }
+        public Action<DownloadStateEnum,string, double> ProgressCallback { get; set; }
         public DownloadVersionInfoEntry VersionInfo { get; private set; }
         private string ID = null;
 
@@ -34,6 +35,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             {
                 ID = VersionInfo.Version.Id;
             }
+
+            LoadGameJsonAsync();
         }
 
         public async Task<string> LoadGameJsonAsync()
@@ -54,11 +57,11 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             if (!Directory.Exists(Path.Combine(GamePath, "versions", ID)))
                 Directory.CreateDirectory(Path.Combine(GamePath, "versions", ID));
 
-            ProgressCallback?.Invoke("LoadConfigs...", 5);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadJson,"", 5);
             var versionjson = await LoadGameJsonAsync();
             File.WriteAllText(Path.Combine(GamePath, "versions", ID, $"{ID}.json"), versionjson);
 
-            ProgressCallback?.Invoke("DownloadJsons...", 10);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadJson,"", 10);
             VersionInfo.VersionAssetsJsonURL = VersionInfo.GameJsonEntry.AssetIndex.Url;
             Console.WriteLine(VersionInfo.VersionAssetsJsonURL);
             _httpClient = new HttpClient();
@@ -67,7 +70,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             Directory.CreateDirectory(Path.Combine(GamePath, "assets", "indexes"));
             File.WriteAllText(Path.Combine(GamePath, "assets", "indexes", $"{VersionInfo.GameJsonEntry.Assets}.json"), assetsjson);
 
-            ProgressCallback?.Invoke("DownloadAssets", 15);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadAssets,"", 15);
             Assets = ParseAssetsJson(assetsjson); 
             DownloadAssets(GamePath).Wait();
             DownloadLibraries(GamePath).Wait();
@@ -78,7 +81,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         {
             if (Assets == null || Assets.Objects.Count == 0)
             {
-                ProgressCallback?.Invoke("No assets to download.", 100);
+                ProgressCallback?.Invoke(DownloadStateEnum.DownloadAssets,"(0/0)", 100);
                 return;
             }
 
@@ -174,7 +177,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                         }
 
                         double progressPercentage = (double)completedFiles / totalFiles * 100;
-                        ProgressCallback?.Invoke($"Downloading assets ({completedFiles}/{totalFiles})",
+                        ProgressCallback?.Invoke(DownloadStateEnum.DownloadAssets,$"({completedFiles}/{totalFiles})",
                             progressPercentage);
                     }
 
@@ -234,7 +237,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                                 retryCompleted++;
                                 double progressPercentage = (double)completedFiles / totalFiles * 100;
                                 ProgressCallback?.Invoke(
-                                    $"Retrying assets ({retryCompleted}/{retryCount}) - Attempt {currentRetry}",
+                                    DownloadStateEnum.DownloadAssets,$"({retryCompleted}/{retryCount})",
                                     progressPercentage);
                             }
                         }
@@ -253,7 +256,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                 await Task.WhenAll(retryTasks);
             }
 
-            ProgressCallback?.Invoke("Assets download complete.", 100);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadAssetsSuccess,"OK", 100);
         }
 
         private bool VerifyFileSize(string filePath, long expectedSize)
@@ -312,7 +315,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
 
             if (items.Count == 0)
             {
-                ProgressCallback?.Invoke("No libraries to download.", 100);
+                ProgressCallback?.Invoke(DownloadStateEnum.DownloadLibrary,"(0/0)", 100);
                 return;
             }
 
@@ -392,8 +395,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                         }
 
                         double progressPercentage = (double)completedFiles / totalFiles * 100;
-                        ProgressCallback?.Invoke(
-                            $"Downloading libraries ({completedFiles}/{totalFiles}) - {Path.GetFileName(library.Key)}",
+                        ProgressCallback?.Invoke(DownloadStateEnum.DownloadLibrary,
+                            $"({completedFiles}/{totalFiles})",
                             progressPercentage
                         );
                     }
@@ -445,8 +448,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                                 completedFiles++;
                                 retryCompleted++;
                                 double progressPercentage = (double)completedFiles / totalFiles * 100;
-                                ProgressCallback?.Invoke(
-                                    $"Retrying libraries ({retryCompleted}/{retryCount}) - Attempt {currentRetry}",
+                                ProgressCallback?.Invoke(DownloadStateEnum.DownloadLibrary,
+                                    $"({retryCompleted}/{retryCount})",
                                     progressPercentage
                                 );
                             }
@@ -466,7 +469,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                 await Task.WhenAll(retryTasks);
             }
 
-            ProgressCallback?.Invoke("Libraries download complete.", 100);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadLibrarySuccess,"OK", 100);
         }
 
         public async Task DownloadSubstance(string GamePath)
@@ -481,11 +484,11 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             // Skip if already downloaded
             if (File.Exists(substancePath))
             {
-                ProgressCallback?.Invoke("Game client already downloaded.", 100);
+                ProgressCallback?.Invoke(DownloadStateEnum.DownloadSuccess,"OK", 100);
                 return;
             }
 
-            ProgressCallback?.Invoke("Downloading game client...", 0);
+            ProgressCallback?.Invoke(DownloadStateEnum.DownloadClient,"Client...", 0);
 
             try
             {
@@ -520,8 +523,8 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                                 // Only update if percentage changed significantly
                                 if (Math.Abs(percentage - lastPercentage) >= 1 || downloadedBytes == totalBytes)
                                 {
-                                    ProgressCallback?.Invoke(
-                                        $"Downloading game client: {FormatBytes(downloadedBytes)}/{FormatBytes(totalBytes)}",
+                                    ProgressCallback?.Invoke(DownloadStateEnum.DownloadClient,
+                                        $"{FormatBytes(downloadedBytes)}/{FormatBytes(totalBytes)}",
                                         percentage
                                     );
                                     lastPercentage = percentage;
@@ -532,7 +535,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                     }
                 }
 
-                ProgressCallback?.Invoke("Game client downloaded successfully.", 100);
+                ProgressCallback?.Invoke(DownloadStateEnum.DownloadSuccess,"OK", 100);
             }
             catch (Exception ex)
             {
@@ -542,7 +545,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                     File.Delete(substancePath);
                 }
 
-                ProgressCallback?.Invoke($"Error downloading game client: {ex.Message}", 0);
+                ProgressCallback?.Invoke(DownloadStateEnum.Error,$"Error", 100);
                 throw;
             }
         }
