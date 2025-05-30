@@ -105,8 +105,9 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             }
         }
 
-        public async Task Install(string GamePath)
+        public async Task Install(string GamePath,string InstallName = null)
         {
+            if (InstallName != null) ID = InstallName;
             if (!Directory.Exists(GamePath)) Directory.CreateDirectory(GamePath);
             if (!Directory.Exists(Path.Combine(GamePath, "versions"))) Directory.CreateDirectory(Path.Combine(GamePath, "versions"));
             if (!Directory.Exists(Path.Combine(GamePath, "versions", ID)))
