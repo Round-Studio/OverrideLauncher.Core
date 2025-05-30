@@ -20,14 +20,14 @@ var version = "1.17";
 var installversion = version;
 var gamedir = "D:/.minecraft";
 
-#region 安装服务端
+/*#region 安装服务端
 
 /*InstallServer installServer = new InstallServer(DownloadVersionHelper.TryingFindVersion(installversion).Result);
 installServer.ProgressCallback = (string logs, double progress) => { Console.WriteLine(logs + "  " + progress); };
 installServer.Install(new ServerInstancesInfo()
 {
     InstallPath = installversion
-}).Wait();*/
+}).Wait();#1#
 
 #endregion
 #region 启动服务端
@@ -47,18 +47,16 @@ installServer.Install(new ServerInstancesInfo()
     }
 });
 serverRunner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
-serverRunner.Start();*/
+serverRunner.Start();#1#
 
 #endregion
 #region 安装游戏
 
-if (!Directory.Exists(Path.Combine(gamedir,  "versions", installversion)))
-{
-    InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
-    ins.ProgressCallback = (DownloadStateEnum state,string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
-    ins.DownloadThreadsCount = 512;
-    ins.Install(gamedir).Wait();
-}
+InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
+ins.ProgressCallback = (DownloadStateEnum state,string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
+ins.DownloadThreadsCount = 512;
+Console.WriteLine(ins.GetThePreInstalledSize().Result);
+// ins.Install(gamedir).Wait();
 
 var installer = new FabricInstaller();
 var tmp = FabricInstaller.GetLoaderVersionsAsync(installversion).Result[0];
@@ -109,4 +107,9 @@ ClientRunner Runner = new ClientRunner(new ClientRunnerInfo()
 Runner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
 Runner.Start();
 
-#endregion
+#endregion*/
+
+InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
+ins.ProgressCallback = (DownloadStateEnum state,string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
+ins.DownloadThreadsCount = 512;
+Console.WriteLine(ins.GetThePreInstalledSize().Result);

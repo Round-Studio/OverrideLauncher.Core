@@ -35,19 +35,74 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             {
                 ID = VersionInfo.Version.Id;
             }
-
-            LoadGameJsonAsync();
         }
 
+        public async Task<ulong> GetThePreInstalledSize()
+        {
+            await LoadGameJsonAsync();
+            await GetAssetsJson(VersionInfo.GameJsonEntry.AssetIndex.Url);
+            var size = 0;
+            
+            var os = RuntimeInformation.OSDescription.ToLower();
+            bool isWindows = os.Contains("windows");
+            bool isMacOS = os.Contains("macos") || os.Contains("darwin");
+            bool isLinux = os.Contains("linux");
+
+            VersionInfo.GameJsonEntry.Libraries.ForEach(x =>
+            {
+                if(x.Downloads is LibraryDownloads lib)
+                {
+                    if(lib.Artifact is Artifact art)
+                        size += art.Size;
+                    if (lib.Classifiers is Dictionary<string, Artifact> cla)
+                    {
+                        var nativeKey = "";
+                        if (isWindows && lib.Classifiers.ContainsKey("natives-windows"))
+                        {
+                            nativeKey = "natives-windows";
+                        }
+                        else if (isMacOS && lib.Classifiers.ContainsKey("natives-macos"))
+                        {
+                            nativeKey = "natives-macos";
+                        }
+                        else if (isLinux && lib.Classifiers.ContainsKey("natives-linux"))
+                        {
+                            nativeKey = "natives-linux";
+                        }
+
+                        try
+                        {
+                            size += cla[nativeKey].Size;
+                        }catch{ }
+                    }
+                }
+            });
+            size += VersionInfo.GameJsonEntry.AssetIndex.Size;
+            size += VersionInfo.GameJsonEntry.Downloads.Client.Size;
+            foreach (var ass in Assets.Objects)
+            {
+                size += ass.Value.Size;
+            }
+            
+            return (ulong)size;
+        }
+        
         public async Task<string> LoadGameJsonAsync()
         {
-            string json = await _httpClient.GetStringAsync(VersionInfo.Version.Url);
-            VersionInfo.GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(json);
             if (VersionInfo.GameJsonEntry == null)
             {
-                throw new InvalidOperationException("Failed to deserialize game JSON.");
+                string json = await _httpClient.GetStringAsync(VersionInfo.Version.Url);
+                VersionInfo.GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(json);
+                if (VersionInfo.GameJsonEntry == null)
+                {
+                    throw new InvalidOperationException("Failed to deserialize game JSON.");
+                }   
+                return json;
             }
-            return json;
+            else
+            {
+                return JsonSerializer.Serialize(VersionInfo.GameJsonEntry);
+            }
         }
 
         public async Task Install(string GamePath)
@@ -65,7 +120,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             VersionInfo.VersionAssetsJsonURL = VersionInfo.GameJsonEntry.AssetIndex.Url;
             Console.WriteLine(VersionInfo.VersionAssetsJsonURL);
             _httpClient = new HttpClient();
-            var assetsjson = await _httpClient.GetStringAsync(VersionInfo.VersionAssetsJsonURL);
+            var assetsjson = await GetAssetsJson(VersionInfo.VersionAssetsJsonURL);
 
             Directory.CreateDirectory(Path.Combine(GamePath, "assets", "indexes"));
             File.WriteAllText(Path.Combine(GamePath, "assets", "indexes", $"{VersionInfo.GameJsonEntry.Assets}.json"), assetsjson);
@@ -75,6 +130,20 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             DownloadAssets(GamePath).Wait();
             DownloadLibraries(GamePath).Wait();
             DownloadSubstance(GamePath).Wait();
+        }
+
+        public async Task<string> GetAssetsJson(string url)
+        {
+            if (Assets != null)
+            {
+                return JsonSerializer.Serialize(Assets);
+            }
+            else
+            {
+                var json = await _httpClient.GetStringAsync(url);
+                Assets = ParseAssetsJson(json);
+                return json;
+            }
         }
 
         public async Task DownloadAssets(string GamePath)
