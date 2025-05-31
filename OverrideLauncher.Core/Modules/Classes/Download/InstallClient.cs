@@ -120,7 +120,6 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             ProgressCallback?.Invoke(DownloadStateEnum.DownloadJson,"", 10);
             VersionInfo.VersionAssetsJsonURL = VersionInfo.GameJsonEntry.AssetIndex.Url;
             Console.WriteLine(VersionInfo.VersionAssetsJsonURL);
-            _httpClient = new HttpClient();
             var assetsjson = await GetAssetsJson(VersionInfo.VersionAssetsJsonURL);
 
             Directory.CreateDirectory(Path.Combine(GamePath, "assets", "indexes"));
