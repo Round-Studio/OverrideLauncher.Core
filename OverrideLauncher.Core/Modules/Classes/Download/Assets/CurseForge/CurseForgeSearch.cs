@@ -92,7 +92,6 @@ public class CurseForgeSearch
         response.EnsureSuccessStatusCode();
 
         var responseBody = response.Content.ReadAsStringAsync().Result;
-        File.WriteAllText("D:/aaa.json",responseBody);
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

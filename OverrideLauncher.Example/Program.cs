@@ -128,3 +128,4 @@ ins.Install(gamedir).Wait();
 using OverrideLauncher.Core.Modules.Classes.Download.Assets.CurseForge;
 
 var res = CurseForgeSearch.GetFeatured("$2a$10$Awb53b9gSOIJJkdV3Zrgp.CyFP.dI13QKbWn/4UZI4G4ff18WneB6").Result;
+res.Data.Featured.ForEach(x=>Console.WriteLine(x.Name));
