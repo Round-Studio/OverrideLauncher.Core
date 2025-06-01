@@ -1,6 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry.DownloadAssetsEntry;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace OverrideLauncher.Core.Modules.Classes.Download.Assets.CurseForge;
 
@@ -66,39 +69,39 @@ public class CurseForgeSearch
     }
     public static async Task<CurseForgeFeaturedResponse> GetFeatured(string ApiKey)
     {
-        string root = "https://api.curseforge.com";
-        
-        // 搜索参数
-        var baseUrl = $"{root}/v1/mods/featured?gameId=432";
-        
-        using (var client = new HttpClient())
+        var _httpClient = new HttpClient();
+        _httpClient = new HttpClient
         {
-            client.DefaultRequestHeaders.Add("x-api-key", ApiKey);
-            
-            // 发送GET请求
-            HttpResponseMessage response = await client.GetAsync(baseUrl);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = await response.Content.ReadAsStringAsync();
-                
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
-                    PropertyNameCaseInsensitive = true
-                };
+            BaseAddress = new Uri("https://api.curseforge.com/")
+        };
+        _httpClient.DefaultRequestHeaders.Add("x-api-key", ApiKey);
+        var gameId = 432;
+        // 构建请求体
+        var requestBody = new
+        {
+            gameId,
+        };
 
-                // 反序列化 JSON 响应
-                var body = JsonSerializer.Deserialize<CurseForgeFeaturedResponse>(responseBody, options);
-                // 这里可以反序列化为对象进行处理
-                return body;
-            }
-            else
-            {
-                Console.WriteLine($"Error: {response.StatusCode}");
-                return null;
-            }
-        }
+        var json = JsonConvert.SerializeObject(requestBody);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        // 发送请求
+        var response = await _httpClient.PostAsync("v1/mods/featured", content);
+
+        // 确保请求成功
+        response.EnsureSuccessStatusCode();
+
+        var responseBody = response.Content.ReadAsStringAsync().Result;
+        File.WriteAllText("D:/aaa.json",responseBody);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+            PropertyNameCaseInsensitive = true
+        };
+
+        // 反序列化 JSON 响应
+        var body = JsonSerializer.Deserialize<CurseForgeFeaturedResponse>(responseBody, options);
+        return body;
     }
 }

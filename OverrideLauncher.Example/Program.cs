@@ -1,12 +1,14 @@
-﻿using System;
+﻿/*using System;
 using OverrideLauncher.Core.Modules.Classes.Account;
 using OverrideLauncher.Core.Modules.Classes.Download;
+using OverrideLauncher.Core.Modules.Classes.Download.Assets.CurseForge;
 using OverrideLauncher.Core.Modules.Classes.Download.ModLoader;
 using OverrideLauncher.Core.Modules.Classes.Launch;
 using OverrideLauncher.Core.Modules.Classes.Launch.Client;
 using OverrideLauncher.Core.Modules.Classes.Version;
 using OverrideLauncher.Core.Modules.Entry.AccountEntry;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
+using OverrideLauncher.Core.Modules.Entry.DownloadEntry.DownloadAssetsEntry;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry.ModloaderEntry;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.JavaEntry;
@@ -27,7 +29,7 @@ installServer.ProgressCallback = (string logs, double progress) => { Console.Wri
 installServer.Install(new ServerInstancesInfo()
 {
     InstallPath = installversion
-}).Wait();#1#
+}).Wait();#2#
 
 #endregion
 #region 启动服务端
@@ -47,7 +49,7 @@ installServer.Install(new ServerInstancesInfo()
     }
 });
 serverRunner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
-serverRunner.Start();#1#
+serverRunner.Start();#2#
 
 #endregion
 #region 安装游戏
@@ -107,9 +109,22 @@ ClientRunner Runner = new ClientRunner(new ClientRunnerInfo()
 Runner.LogsOutput = (string logs) => { Console.WriteLine(logs); };
 Runner.Start();
 
-#endregion*/
+#endregion#1#
 
 InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
 ins.ProgressCallback = (DownloadStateEnum state,string logs, double progress) => { Console.WriteLine(logs+"   "+progress); };
 ins.DownloadThreadsCount = 512;
-Console.WriteLine(ins.GetThePreInstalledSize().Result);
+ins.Install(gamedir).Wait();
+
+/*var a = CurseForgeSearch.Search(new CurseForgeSearchInfo()
+{
+    ApiKey = "$2a$10$Awb53b9gSOIJJkdV3Zrgp.CyFP.dI13QKbWn/4UZI4G4ff18WneB6",
+    SearchName = "JEI",
+    GameVersion = "",
+    Index = 0,
+    PageSize = 2
+}).Result;#1#*/
+
+using OverrideLauncher.Core.Modules.Classes.Download.Assets.CurseForge;
+
+var res = CurseForgeSearch.GetFeatured("$2a$10$Awb53b9gSOIJJkdV3Zrgp.CyFP.dI13QKbWn/4UZI4G4ff18WneB6").Result;
