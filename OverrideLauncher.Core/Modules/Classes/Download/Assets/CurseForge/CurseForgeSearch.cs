@@ -64,4 +64,41 @@ public class CurseForgeSearch
             }
         }
     }
+    public static async Task<CurseForgeFeaturedResponse> GetFeatured(string ApiKey)
+    {
+        string root = "https://api.curseforge.com";
+        
+        // 搜索参数
+        var baseUrl = $"{root}/v1/mods/featured?gameId=432";
+        
+        using (var client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Add("x-api-key", ApiKey);
+            
+            // 发送GET请求
+            HttpResponseMessage response = await client.GetAsync(baseUrl);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+                    PropertyNameCaseInsensitive = true
+                };
+
+                // 反序列化 JSON 响应
+                var body = JsonSerializer.Deserialize<CurseForgeFeaturedResponse>(responseBody, options);
+                // 这里可以反序列化为对象进行处理
+                return body;
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+                return null;
+            }
+        }
+    }
 }
