@@ -8,19 +8,35 @@ public class CurseForgeSearch
 {
     public static async Task<CurseForgeSearchResponse> Search(CurseForgeSearchInfo Info)
     {
-        string baseUrl = "https://api.curseforge.com";
+        Dictionary<string, dynamic> Args = new Dictionary<string, dynamic>()
+        {
+            ["&gameVersion"] = Info.GameVersion,
+            ["&searchFilter"] = Info.SearchName,
+            ["&pageSize"] = Info.PageSize,
+            ["&index"] = Info.Index,
+            ["&modLoader"] = Info.ModLoader,
+            ["&classId"] = Info.ClassID
+        };
+        var bodyUrl = "";
+        foreach (var keyValuePair in Args)
+        {
+            if (keyValuePair.Value != null)
+            {
+                bodyUrl += $"{keyValuePair.Key}={keyValuePair.Value}";
+            }
+        }
+        
+        string root = "https://api.curseforge.com";
         
         // 搜索参数
-        var gameName = Info.GameVersion;
-        string searchFilter = Info.SearchName;
-        int pageSize = Info.PageSize;
+        var baseUrl = $"{root}/v1/mods/search?gameId=432";
         
         using (var client = new HttpClient())
         {
             client.DefaultRequestHeaders.Add("x-api-key", Info.ApiKey);
             
             // 构建搜索URL
-            string searchUrl = $"{baseUrl}/v1/mods/search?gameId=432&gameVersion={gameName}&searchFilter={searchFilter}&pageSize={pageSize}&index={Info.Index}&modLoader={Info.ModLoader}";
+            string searchUrl = $"{baseUrl}{bodyUrl}";
             
             // 发送GET请求
             HttpResponseMessage response = await client.GetAsync(searchUrl);
