@@ -20,7 +20,7 @@ public class CurseForgeSearch
             client.DefaultRequestHeaders.Add("x-api-key", Info.ApiKey);
             
             // 构建搜索URL
-            string searchUrl = $"{baseUrl}/v1/mods/search?gameId=432&gameVersion={gameName}&searchFilter={searchFilter}&pageSize={pageSize}&index={Info.Index}";
+            string searchUrl = $"{baseUrl}/v1/mods/search?gameId=432&gameVersion={gameName}&searchFilter={searchFilter}&pageSize={pageSize}&index={Info.Index}&modLoader={Info.ModLoader}";
             
             // 发送GET请求
             HttpResponseMessage response = await client.GetAsync(searchUrl);

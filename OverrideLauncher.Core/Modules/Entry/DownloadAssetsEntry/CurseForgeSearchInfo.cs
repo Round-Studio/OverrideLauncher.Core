@@ -8,4 +8,5 @@ public class CurseForgeSearchInfo
     public int GameID { get; set; }
     public int PageSize { get; set; } = 50;
     public int Index { get; set; } = 0;
+    public int ModLoader { get; set; } = 0;
 }
