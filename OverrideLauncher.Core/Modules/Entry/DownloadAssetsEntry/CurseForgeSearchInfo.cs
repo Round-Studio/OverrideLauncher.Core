@@ -19,3 +19,14 @@ public static class CurseForgeSearchClassID
     public const int ResourcePacks = 12;
     public const int LightAndShadowPacks = 6552;
 }
+
+public static class ModLoaderTypeID
+{
+    public const int Any = 0;
+    public const int Forge = 1;
+    public const int Cauldron = 2;
+    public const int LiteLoader = 3;
+    public const int Fabric = 4;
+    public const int Quilt = 5;
+    public const int NeoForge = 6;
+}
