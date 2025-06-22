@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using OverrideLauncher.Core.Modules.Entry.AccountEntry;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 public class CustomHttpClientHandler : HttpClientHandler
 {
@@ -154,7 +155,7 @@ public class MicrosoftAuthenticator
     {
         var requestUri = "https://user.auth.xboxlive.com/user/authenticate";
         var content = new StringContent(
-            JsonSerializer.Serialize(new
+            JsonConvert.SerializeObject(new
             {
                 Properties = new
                 {
@@ -180,7 +181,7 @@ public class MicrosoftAuthenticator
     {
         var requestUri = "https://xsts.auth.xboxlive.com/xsts/authorize";
         var content = new StringContent(
-            JsonSerializer.Serialize(new
+            JsonConvert.SerializeObject(new
             {
                 Properties = new
                 {
@@ -205,7 +206,7 @@ public class MicrosoftAuthenticator
     {
         var requestUri = "https://api.minecraftservices.com/authentication/login_with_xbox";
         var content = new StringContent(
-            JsonSerializer.Serialize(new
+            JsonConvert.SerializeObject(new
             {
                 identityToken = $"XBL3.0 x={uhs};{xstsToken}"
             }),

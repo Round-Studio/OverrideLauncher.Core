@@ -39,7 +39,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
 
         public async Task<ulong> GetThePreInstalledSize()
         {
-            await LoadGameJsonAsync();
+            Console.WriteLine(await LoadGameJsonAsync());
             await GetAssetsJson(VersionInfo.GameJsonEntry.AssetIndex.Url);
             var size = 0;
             
@@ -97,11 +97,12 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
                 {
                     throw new InvalidOperationException("Failed to deserialize game JSON.");
                 }   
+                Console.WriteLine(json);
                 return json;
             }
             else
             {
-                return JsonSerializer.Serialize(VersionInfo.GameJsonEntry);
+                return JsonConvert.SerializeObject(VersionInfo.GameJsonEntry, Formatting.Indented);
             }
         }
 
@@ -136,7 +137,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         {
             if (Assets != null)
             {
-                return JsonSerializer.Serialize(Assets);
+                return JsonConvert.SerializeObject(Assets);
             }
             else
             {
