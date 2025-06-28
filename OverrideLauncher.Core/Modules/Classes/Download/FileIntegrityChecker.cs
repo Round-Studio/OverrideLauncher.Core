@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
+using System.Text.Json;
 using OverrideLauncher.Core.Modules.Classes;
 using OverrideLauncher.Core.Modules.Classes.Version;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
@@ -34,10 +34,10 @@ public class FileIntegrityChecker
         _gamePath = versionInfo.ClientInstances.GameCatalog;
         _versionInfo = versionInfo.ClientInstances;
         
-        _version = JsonConvert.DeserializeObject<GameJsonEntry>(
+        _version = JsonSerializer.Deserialize<GameJsonEntry>(
             File.ReadAllText(Path.Combine(_gamePath, "versions", versionInfo.ClientInstances.GameName,
                 $"{versionInfo.ClientInstances.GameName}.json")));
-        _assets = JsonConvert.DeserializeObject<AssetsEntry.RootObject>(
+        _assets = JsonSerializer.Deserialize<AssetsEntry.RootObject>(
             File.ReadAllText(Path.Combine(_gamePath, "assets", "indexes",
                 $"{_version.Assets}.json")));
     }

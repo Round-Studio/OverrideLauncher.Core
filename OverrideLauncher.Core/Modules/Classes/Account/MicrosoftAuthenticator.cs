@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 using OverrideLauncher.Core.Modules.Entry.AccountEntry;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -154,18 +154,24 @@ public class MicrosoftAuthenticator
     private async Task<XblTokenResponse> AuthenticateWithXboxLive(string accessToken)
     {
         var requestUri = "https://user.auth.xboxlive.com/user/authenticate";
-        var content = new StringContent(
-            JsonConvert.SerializeObject(new
+        var requestData = new
+        {
+            Properties = new
             {
-                Properties = new
-                {
-                    AuthMethod = "RPS",
-                    SiteName = "user.auth.xboxlive.com",
-                    RpsTicket = $"d={accessToken}"
-                },
-                RelyingParty = "http://auth.xboxlive.com",
-                TokenType = "JWT"
-            }),
+                AuthMethod = "RPS",
+                SiteName = "user.auth.xboxlive.com",
+                RpsTicket = $"d={accessToken}"
+            },
+            RelyingParty = "http://auth.xboxlive.com",
+            TokenType = "JWT"
+        };
+
+// 序列化为 JSON
+        var json = JsonSerializer.Serialize(requestData);
+
+// 创建 StringContent
+        var content = new StringContent(
+            json,
             Encoding.UTF8,
             "application/json"
         );
@@ -180,17 +186,24 @@ public class MicrosoftAuthenticator
     private async Task<XstsTokenResponse> AuthenticateWithXSTS(string xblToken)
     {
         var requestUri = "https://xsts.auth.xboxlive.com/xsts/authorize";
-        var content = new StringContent(
-            JsonConvert.SerializeObject(new
+        
+        var requestData = new
+        {
+            Properties = new
             {
-                Properties = new
-                {
-                    SandboxId = "RETAIL",
-                    UserTokens = new[] { xblToken }
-                },
-                RelyingParty = "rp://api.minecraftservices.com/",
-                TokenType = "JWT"
-            }),
+                SandboxId = "RETAIL",
+                UserTokens = new[] { xblToken }
+            },
+            RelyingParty = "rp://api.minecraftservices.com/",
+            TokenType = "JWT"
+        };
+
+// 序列化为 JSON
+        var json = JsonSerializer.Serialize(requestData);
+
+// 创建 StringContent
+        var content = new StringContent(
+            json,
             Encoding.UTF8,
             "application/json"
         );
@@ -205,11 +218,18 @@ public class MicrosoftAuthenticator
     private async Task<MinecraftTokenResponse> GetMinecraftAccessToken(string uhs, string xstsToken)
     {
         var requestUri = "https://api.minecraftservices.com/authentication/login_with_xbox";
+        
+        var requestData = new
+        {
+            identityToken = $"XBL3.0 x={uhs};{xstsToken}"
+        };
+
+// 序列化为 JSON
+        var json = JsonSerializer.Serialize(requestData);
+
+// 创建 StringContent
         var content = new StringContent(
-            JsonConvert.SerializeObject(new
-            {
-                identityToken = $"XBL3.0 x={uhs};{xstsToken}"
-            }),
+            json,
             Encoding.UTF8,
             "application/json"
         );

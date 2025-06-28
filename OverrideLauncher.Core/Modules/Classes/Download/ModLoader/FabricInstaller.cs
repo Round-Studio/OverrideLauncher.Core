@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes; // .NET 6+ 特性
+using System.Collections.Generic;
+using System.Linq;
 using OverrideLauncher.Core.Modules.Classes.Version;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry.ModloaderEntry;
 
@@ -13,192 +15,169 @@ namespace OverrideLauncher.Core.Modules.Classes.Download.ModLoader
     {
         public const string BaseUrl = "https://meta.fabricmc.net/v2/";
         private static readonly HttpClient client = new HttpClient();
+        
         public static async Task<List<FabricLoaderVersion>> GetLoaderVersionsAsync(string minecraftVersion)
         {
-            using (var httpClient = new HttpClient())
+            using var httpClient = new HttpClient
             {
-                httpClient.BaseAddress = new Uri(BaseUrl);
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "C# FabricMC API Client");
-                httpClient.Timeout = TimeSpan.FromSeconds(30);
+                BaseAddress = new Uri(BaseUrl),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "C# FabricMC API Client");
 
-                var response = await httpClient.GetAsync($"versions/loader/{minecraftVersion}");
+            var response = await httpClient.GetAsync($"versions/loader/{minecraftVersion}");
+            response.EnsureSuccessStatusCode();
             
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException($"Failed to get loader versions: {response.StatusCode}");
-                }
-            
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<FabricLoaderVersion>>(content);
-            }
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<FabricLoaderVersion>>(content) ?? new List<FabricLoaderVersion>();
         }
 
-
-
         private FabricInstallInfo _installInfo;
-        public async Task InstallFabricAsync(FabricInstallInfo InstallInfo)
+        
+        public async Task InstallFabricAsync(FabricInstallInfo installInfo)
         {
-            _installInfo = InstallInfo;
-            _installInfo.FabricVersion = GetBestIntermediaryVersion(InstallInfo.FabricVersion.Intermediary.Version,
-                InstallInfo.FabricVersion.Loader.Version).Result;
-            // 获取最佳中间版本
-            string intermediaryVersion = InstallInfo.FabricVersion.Loader.Version;
-            if (string.IsNullOrEmpty(intermediaryVersion))
+            _installInfo = installInfo;
+            _installInfo.FabricVersion = await GetBestIntermediaryVersion(
+                installInfo.FabricVersion.Intermediary.Version,
+                installInfo.FabricVersion.Loader.Version);
+
+            if (string.IsNullOrEmpty(_installInfo.FabricVersion.Loader.Version))
             {
                 Console.WriteLine("Failed to get intermediary version.");
                 return;
             }
 
-            // 获取启动器元数据
-            JObject launcherMeta = await GetLauncherMeta(new VersionParse(InstallInfo.GameInfo).GameJson.Id,
-                InstallInfo.FabricVersion.Loader.Version);
+            // 使用 JsonNode 替代 JObject
+            var launcherMeta = await GetLauncherMeta(
+                new VersionParse(_installInfo.GameInfo).GameJson.Id,
+                _installInfo.FabricVersion.Loader.Version);
+
             if (launcherMeta == null)
             {
                 Console.WriteLine("Failed to get launcher metadata.");
                 return;
             }
 
-            // 下载必要的库
             await DownloadLibraries(launcherMeta);
-
-            // 下载Fabric加载器
-            await DownloadFabricLoader(InstallInfo.FabricVersion.Loader);
-
-            // 下载中间版本
-            await DownloadIntermediary(InstallInfo.FabricVersion.Intermediary);
+            await DownloadFabricLoader(_installInfo.FabricVersion.Loader);
+            await DownloadIntermediary(_installInfo.FabricVersion.Intermediary);
 
             var entry = new VersionParse(_installInfo.GameInfo).GameJson;
-            JArray libraries = launcherMeta["libraries"]["common"] as JArray;
-            foreach (JObject library in libraries)
+            
+            // 处理 libraries
+            if (launcherMeta["libraries"]?["common"] is JsonArray libraries)
             {
-                string url = library["url"].ToString();
-                string name = library["name"].ToString();
-                
-                entry.Libraries.Add(new Library()
+                foreach (var library in libraries.OfType<JsonObject>())
                 {
-                    Url = url,
-                    Name = name
-                });
+                    entry.Libraries.Add(new Library
+                    {
+                        Url = library["url"]?.GetValue<string>() ?? string.Empty,
+                        Name = library["name"]?.GetValue<string>() ?? string.Empty
+                    });
+                }
             }
-            
+
+            // 处理 mainClass
             var mainClass = _installInfo.FabricVersion.LauncherMeta.MainClass;
-            if (mainClass is string)
+            entry.MainClass = mainClass switch
             {
-                entry.MainClass = mainClass.ToString();
-            }
-            else
+                string s => s,
+                JsonObject obj => obj["client"]?.GetValue<string>(),
+                _ => entry.MainClass
+            };
+
+            // 添加固定库
+            entry.Libraries.AddRange(new[]
             {
-                var mainClassObj = mainClass as JObject;
-                var client = mainClassObj["client"]?.ToString();
-                entry.MainClass = client;
-            }
-            entry.Libraries.Add(new Library()
-            {
-                Name = _installInfo.FabricVersion.Intermediary.Maven,
-                Url = $"https://maven.fabricmc.net/"
+                new Library { Name = _installInfo.FabricVersion.Intermediary.Maven, Url = "https://maven.fabricmc.net/" },
+                new Library { Name = _installInfo.FabricVersion.Loader.Maven, Url = "https://maven.fabricmc.net/" }
             });
-            entry.Libraries.Add(new Library()
-            {
-                Name = _installInfo.FabricVersion.Loader.Maven,
-                Url = $"https://maven.fabricmc.net/"
-            });
+
+            // 序列化并保存
+            var jsonString = JsonSerializer.Serialize(entry, new JsonSerializerOptions { WriteIndented = true });
+            var path = Path.Combine(
+                _installInfo.GameInfo.GameCatalog, 
+                "versions", 
+                _installInfo.GameInfo.GameName,
+                $"{_installInfo.GameInfo.GameName}.json");
             
-            string jsonString = JsonConvert.SerializeObject(entry);
-            File.WriteAllText(
-                Path.Combine(_installInfo.GameInfo.GameCatalog, "versions", _installInfo.GameInfo.GameName,
-                    $"{_installInfo.GameInfo.GameName}.json"), jsonString);
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            await File.WriteAllTextAsync(path, jsonString);
             
             Console.WriteLine("Installation completed successfully.");
         }
 
-        // 获取最佳中间版本
         private static async Task<FabricLoaderVersion> GetBestIntermediaryVersion(string gameVersion, string loaderVersion)
         {
-            string url = $"https://meta.fabricmc.net/v2/versions/loader/{gameVersion}/{loaderVersion}";
-            HttpResponseMessage response = await client.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
-
-            string responseBody = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<FabricLoaderVersion>(responseBody);
+            var response = await client.GetAsync($"versions/loader/{gameVersion}/{loaderVersion}");
+            if (!response.IsSuccessStatusCode) return null;
+            
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<FabricLoaderVersion>(content);
         }
 
-        // 获取启动器元数据
-        private async Task<JObject> GetLauncherMeta(string gameVersion, string loaderVersion)
+        private async Task<JsonObject> GetLauncherMeta(string gameVersion, string loaderVersion)
         {
-            string url = $"https://meta.fabricmc.net/v2/versions/loader/{gameVersion}/{loaderVersion}";
-            HttpResponseMessage response = await client.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
-
-            string responseBody = await response.Content.ReadAsStringAsync();
-            JObject responseJson = JObject.Parse(responseBody);
-            return responseJson["launcherMeta"] as JObject;
+            var response = await client.GetAsync($"versions/loader/{gameVersion}/{loaderVersion}");
+            if (!response.IsSuccessStatusCode) return null;
+            
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JsonNode.Parse(content)?.AsObject();
+            return json?["launcherMeta"]?.AsObject();
         }
 
-        // 下载必要的库
-        private async Task DownloadLibraries(JObject launcherMeta)
+        private async Task DownloadLibraries(JsonObject launcherMeta)
         {
-            JArray libraries = launcherMeta["libraries"]["common"] as JArray;
-            foreach (JObject library in libraries)
+            if (launcherMeta["libraries"]?["common"] is not JsonArray libraries) return;
+            
+            foreach (var library in libraries.OfType<JsonObject>())
             {
-                string url = library["url"].ToString();
-                string name = library["name"].ToString();
+                var url = library["url"]?.GetValue<string>();
+                var name = library["name"]?.GetValue<string>();
+                if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(name)) continue;
 
                 Console.WriteLine($"Downloading library: {name}");
-                await DownloadFile(url+FileHelper.GetJarFilePath(name),
-                    Path.Combine(_installInfo.GameInfo.GameCatalog,"libraries", FileHelper.GetJarFilePath(name)));
+                await DownloadFile(
+                    url + FileHelper.GetJarFilePath(name),
+                    Path.Combine(_installInfo.GameInfo.GameCatalog, "libraries", FileHelper.GetJarFilePath(name)));
             }
         }
 
-        // 下载Fabric加载器
         private async Task DownloadFabricLoader(FabricLoaderVersionInfo loaderVersion)
         {
-            string url = $"https://maven.fabricmc.net/net/fabricmc/fabric-loader/{loaderVersion.Version}/fabric-loader-{loaderVersion.Version}.jar";
+            var url = $"https://maven.fabricmc.net/net/fabricmc/fabric-loader/{loaderVersion.Version}/fabric-loader-{loaderVersion.Version}.jar";
             Console.WriteLine($"Downloading Fabric Loader: {loaderVersion.Maven}");
-            await DownloadFile(url,
-                Path.Combine(_installInfo.GameInfo.GameCatalog, "libraries",FileHelper.GetJarFilePath(loaderVersion.Maven)));
+            await DownloadFile(
+                url,
+                Path.Combine(_installInfo.GameInfo.GameCatalog, "libraries", FileHelper.GetJarFilePath(loaderVersion.Maven)));
         }
         
         private async Task DownloadIntermediary(FabricIntermediaryVersion loaderVersion)
         {
-            string url =
-                $"https://maven.fabricmc.net/net/fabricmc/intermediary/{loaderVersion.Version}/intermediary-{loaderVersion.Version}.jar";
-            Console.WriteLine($"Downloading Fabric Loader: {loaderVersion.Maven}");
-            await DownloadFile(url,
-                Path.Combine(_installInfo.GameInfo.GameCatalog, "libraries",FileHelper.GetJarFilePath(loaderVersion.Maven)));
+            var url = $"https://maven.fabricmc.net/net/fabricmc/intermediary/{loaderVersion.Version}/intermediary-{loaderVersion.Version}.jar";
+            Console.WriteLine($"Downloading Intermediary: {loaderVersion.Maven}");
+            await DownloadFile(
+                url,
+                Path.Combine(_installInfo.GameInfo.GameCatalog, "libraries", FileHelper.GetJarFilePath(loaderVersion.Maven)));
         }
 
-        // 下载文件
         private async Task DownloadFile(string url, string fileName)
         {
             if (File.Exists(fileName)) return;
+            
             Console.WriteLine(url);
-            HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Failed to download {fileName}");
                 return;
             }
 
-            // 确保目标目录存在
-            string directory = Path.GetDirectoryName(fileName);
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            // 下载文件并保存到指定路径
-            using (FileStream fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                await response.Content.CopyToAsync(fileStream);
-            }
-
-            Console.WriteLine($"Downloaded {fileName} to {fileName}");
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            await using var fileStream = File.Create(fileName);
+            await response.Content.CopyToAsync(fileStream);
+            
+            Console.WriteLine($"Downloaded {fileName}");
         }
     }
 }

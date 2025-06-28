@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 using OverrideLauncher.Core.Modules.Enum.Download;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -92,7 +92,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             if (VersionInfo.GameJsonEntry == null)
             {
                 string json = await _httpClient.GetStringAsync(VersionInfo.Version.Url);
-                VersionInfo.GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(json);
+                VersionInfo.GameJsonEntry = JsonSerializer.Deserialize<GameJsonEntry>(json);
                 if (VersionInfo.GameJsonEntry == null)
                 {
                     throw new InvalidOperationException("Failed to deserialize game JSON.");
@@ -102,7 +102,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             }
             else
             {
-                return JsonConvert.SerializeObject(VersionInfo.GameJsonEntry, Formatting.Indented);
+                return JsonSerializer.Serialize(VersionInfo.GameJsonEntry);
             }
         }
 
@@ -137,7 +137,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         {
             if (Assets != null)
             {
-                return JsonConvert.SerializeObject(Assets);
+                return JsonSerializer.Serialize(Assets);
             }
             else
             {
@@ -640,7 +640,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
         {
             try
             {
-                AssetsEntry.RootObject root = JsonConvert.DeserializeObject<AssetsEntry.RootObject>(jsonString);
+                AssetsEntry.RootObject root = JsonSerializer.Deserialize<AssetsEntry.RootObject>(jsonString);
 
                 if (root?.Objects == null)
                 {

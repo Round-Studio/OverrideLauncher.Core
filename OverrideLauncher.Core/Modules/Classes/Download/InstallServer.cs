@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 using OverrideLauncher.Core.Modules.Entry.ServerEntry;
 
@@ -126,7 +127,7 @@ public class InstallServer
     public async Task<string> LoadGameJsonAsync()
     {
         string json = await _httpServer.GetStringAsync(VersionInfo.Version.Url);
-        VersionInfo.GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(json);
+        VersionInfo.GameJsonEntry = JsonSerializer.Deserialize<GameJsonEntry>(json);
         if (VersionInfo.GameJsonEntry == null)
         {
             throw new InvalidOperationException("Failed to deserialize game JSON.");

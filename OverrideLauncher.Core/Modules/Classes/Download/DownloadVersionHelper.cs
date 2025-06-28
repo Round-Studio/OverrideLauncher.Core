@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json;
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 
 namespace OverrideLauncher.Core.Modules.Classes.Download;
@@ -40,7 +41,7 @@ public class DownloadVersionHelper
             string jsonContent = await GetJsonContentAsync(url);
 
             // 反序列化为VersionManifest对象
-            VersionManifestEntry.VersionManifest versionManifest = JsonConvert.DeserializeObject<VersionManifestEntry.VersionManifest>(jsonContent);
+            VersionManifestEntry.VersionManifest versionManifest = JsonSerializer.Deserialize<VersionManifestEntry.VersionManifest>(jsonContent);
             return versionManifest;
         }
         catch (Exception ex)

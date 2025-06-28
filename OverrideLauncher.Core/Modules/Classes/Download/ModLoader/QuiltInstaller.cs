@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json;
 
 namespace OverrideLauncher.Core.Modules.Classes.Download.ModLoader;
 
@@ -22,7 +24,7 @@ public class QuiltInstaller
             }
             
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<FabricLoaderVersion>>(content);
+            return JsonSerializer.Deserialize<List<FabricLoaderVersion>>(content);
         }
     }
 }

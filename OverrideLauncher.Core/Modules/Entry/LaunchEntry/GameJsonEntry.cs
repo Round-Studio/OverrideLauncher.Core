@@ -1,233 +1,246 @@
-﻿using Newtonsoft.Json;
+﻿
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 public class GameJsonEntry
 {
-    [JsonProperty("minecraftArguments")]
+    [JsonPropertyName("minecraftArguments")]
     public string MinecraftArguments { get; set; }
     
-    [JsonProperty("arguments")]
+    [JsonPropertyName("arguments")]
     public Arguments Arguments { get; set; }
 
-    [JsonProperty("assetIndex")]
+    [JsonPropertyName("assetIndex")]
     public AssetIndex AssetIndex { get; set; }
 
-    [JsonProperty("assets")]
+    [JsonPropertyName("assets")]
     public string Assets { get; set; }
 
-    [JsonProperty("complianceLevel")]
+    [JsonPropertyName("complianceLevel")]
     public int ComplianceLevel { get; set; }
 
-    [JsonProperty("downloads")]
+    [JsonPropertyName("downloads")]
     public Downloads Downloads { get; set; }
 
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; }
 
-    [JsonProperty("javaVersion")]
+    [JsonPropertyName("javaVersion")]
     public JavaVersion JavaVersion { get; set; }
 
-    [JsonProperty("libraries")]
+    [JsonPropertyName("libraries")]
     public List<Library> Libraries { get; set; }
 
-    [JsonProperty("logging")]
+    [JsonPropertyName("logging")]
     public Logging Logging { get; set; }
 
-    [JsonProperty("mainClass")]
+    [JsonPropertyName("mainClass")]
     public string MainClass { get; set; }
 
-    [JsonProperty("minimumLauncherVersion")]
+    [JsonPropertyName("minimumLauncherVersion")]
     public int MinimumLauncherVersion { get; set; }
 
-    [JsonProperty("releaseTime")]
+    [JsonPropertyName("releaseTime")]
     public string ReleaseTime { get; set; }
 
-    [JsonProperty("time")]
+    [JsonPropertyName("time")]
     public string Time { get; set; }
 
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; }
 }
 
 public class Arguments
 {
-    [JsonProperty("game")]
+    [JsonPropertyName("game")]
     public List<object> Game { get; set; } // Can be string or RuleObject
 
-    [JsonProperty("jvm")]
+    [JsonPropertyName("jvm")]
     public List<object> Jvm { get; set; } // Can be string or RuleObject
 }
 
 public class RuleObject
 {
-    [JsonProperty("rules")]
+    [JsonPropertyName("rules")]
     public List<Rule> Rules { get; set; }
 
-    [JsonProperty("value")]
+    [JsonPropertyName("value")]
     public object Value { get; set; } // Can be string or string[]
 }
 
 public class Rule
 {
-    [JsonProperty("action")]
+    [JsonPropertyName("action")]
     public string Action { get; set; }
 
-    [JsonProperty("features", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("features")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Features Features { get; set; }
 
-    [JsonProperty("os", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("os")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Os Os { get; set; }
 }
 
 public class Features
 {
-    [JsonProperty("is_demo_user", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("is_demo_user")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IsDemoUser { get; set; }
 
-    [JsonProperty("has_custom_resolution", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("has_custom_resolution")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? HasCustomResolution { get; set; }
 }
 
 public class Os
 {
-    [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Name { get; set; }
 
-    [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("version")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Version { get; set; }
 
-    [JsonProperty("arch", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("arch")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Arch { get; set; }
 }
 
 public class AssetIndex
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; }
 
-    [JsonProperty("sha1")]
+    [JsonPropertyName("sha1")]
     public string Sha1 { get; set; }
 
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public int Size { get; set; }
 
-    [JsonProperty("totalSize")]
+    [JsonPropertyName("totalSize")]
     public int TotalSize { get; set; }
 
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
     public string Url { get; set; }
 }
 
 public class Downloads
 {
-    [JsonProperty("client")]
+    [JsonPropertyName("client")]
     public DownloadItem Client { get; set; }
 
-    [JsonProperty("server")]
+    [JsonPropertyName("server")]
     public DownloadItem Server { get; set; }
 }
 
 public class DownloadItem
 {
-    [JsonProperty("sha1")]
+    [JsonPropertyName("sha1")]
     public string Sha1 { get; set; }
 
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public int Size { get; set; }
 
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
     public string Url { get; set; }
 }
 
 public class JavaVersion
 {
-    [JsonProperty("component")]
+    [JsonPropertyName("component")]
     public string Component { get; set; }
 
-    [JsonProperty("majorVersion")]
+    [JsonPropertyName("majorVersion")]
     public int MajorVersion { get; set; }
 }
 
 public class Library
 {
-    [JsonProperty("downloads")]
+    [JsonPropertyName("downloads")]
     public LibraryDownloads Downloads { get; set; }
 
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
     
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
     public string Url { get; set; }
 
-    [JsonProperty("natives", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("natives")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, string> Natives { get; set; }
 
-    [JsonProperty("rules", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("rules")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Rule> Rules { get; set; }
 
-    [JsonProperty("extract", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("extract")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Extract Extract { get; set; }
 }
 
 public class LibraryDownloads
 {
-    [JsonProperty("artifact", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("artifact")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Artifact Artifact { get; set; }
 
-    [JsonProperty("classifiers", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("classifiers")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, Artifact> Classifiers { get; set; }
 }
 
 public class Artifact
 {
-    [JsonProperty("path")]
+    [JsonPropertyName("path")]
     public string Path { get; set; }
 
-    [JsonProperty("sha1")]
+    [JsonPropertyName("sha1")]
     public string Sha1 { get; set; }
 
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public int Size { get; set; }
 
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
     public string Url { get; set; }
 }
 
 public class Extract
 {
-    [JsonProperty("exclude")]
+    [JsonPropertyName("exclude")]
     public List<string> Exclude { get; set; }
 }
 
 public class Logging
 {
-    [JsonProperty("client")]
+    [JsonPropertyName("client")]
     public LoggingClient Client { get; set; }
 }
 
 public class LoggingClient
 {
-    [JsonProperty("argument")]
+    [JsonPropertyName("argument")]
     public string Argument { get; set; }
 
-    [JsonProperty("file")]
+    [JsonPropertyName("file")]
     public LoggingFile File { get; set; }
 
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; }
 }
 
 public class LoggingFile
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; }
 
-    [JsonProperty("sha1")]
+    [JsonPropertyName("sha1")]
     public string Sha1 { get; set; }
 
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public int Size { get; set; }
 
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
     public string Url { get; set; }
 }

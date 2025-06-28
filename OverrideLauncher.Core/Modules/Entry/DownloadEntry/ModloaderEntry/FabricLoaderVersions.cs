@@ -1,95 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 public class FabricLoaderVersion
 {
-    [JsonProperty("loader")]
+    [JsonPropertyName("loader")]
     public FabricLoaderVersionInfo Loader { get; set; }
     
-    [JsonProperty("intermediary")]
+    [JsonPropertyName("intermediary")]
     public FabricIntermediaryVersion Intermediary { get; set; }
     
-    [JsonProperty("launcherMeta")]
+    [JsonPropertyName("launcherMeta")]
     public FabricLauncherMeta LauncherMeta { get; set; }
 }
 public class FabricLoaderVersionInfo
 {
-    [JsonProperty("separator")]
+    [JsonPropertyName("separator")]
     public string Separator { get; set; }
 
-    [JsonProperty("build")]
+    [JsonPropertyName("build")]
     public int Build { get; set; }
 
-    [JsonProperty("maven")]
+    [JsonPropertyName("maven")]
     public string Maven { get; set; }
 
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public string Version { get; set; }
 
-    [JsonProperty("stable")]
+    [JsonPropertyName("stable")]
     public bool Stable { get; set; }
 }
 
 public class FabricIntermediaryVersion
 {
-    [JsonProperty("maven")]
+    [JsonPropertyName("maven")]
     public string Maven { get; set; }
 
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public string Version { get; set; }
 
-    [JsonProperty("stable")]
+    [JsonPropertyName("stable")]
     public bool Stable { get; set; }
 }
 
 public class FabricLauncherMeta
 {
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public string Version { get; set; }
 
-    [JsonProperty("libraries")]
+    [JsonPropertyName("libraries")]
     public Libraries Libraries { get; set; }
 
-    [JsonProperty("mainClass")]
+    [JsonPropertyName("mainClass")]
     public dynamic MainClass { get; set; }
 }
 
 public class Libraries
 {
-    [JsonProperty("client")]
+    [JsonPropertyName("client")]
     public object[] Client { get; set; }
     
-    [JsonProperty("common")]
+    [JsonPropertyName("common")]
     public Common[] Ccommon { get; set; }
 }
 
 public class Common
 {
-    [JsonProperty("Name")]
+    [JsonPropertyName("Name")]
     public string name { get; set; }
     
-    [JsonProperty("Url")]
+    [JsonPropertyName("Url")]
     public string url { get; set; }
     
-    [JsonProperty("Size")]
+    [JsonPropertyName("Size")]
     public int size { get; set; }
 }
 
 public class MainClass
 {
-    [JsonProperty("client")]
+    [JsonPropertyName("client")]
     public string Client { get; set; }
 
-    [JsonProperty("server")]
+    [JsonPropertyName("server")]
     public string Server { get; set; }
 }
 
 public class FabricGameVersion
 {
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public string Version { get; set; }
 
-    [JsonProperty("stable")]
+    [JsonPropertyName("stable")]
     public bool Stable { get; set; }
 }

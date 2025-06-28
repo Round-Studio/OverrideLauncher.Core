@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
 
 namespace OverrideLauncher.Core.Modules.Classes.Version;
@@ -12,6 +13,6 @@ public class VersionParse
     {
         ClientInstances = Info;
         var file = Path.Combine(Info.GameCatalog, "versions", Info.GameName, $"{Info.GameName}.json");
-        GameJson = JsonConvert.DeserializeObject<GameJsonEntry>(File.ReadAllText(file));
+        GameJson = JsonSerializer.Deserialize<GameJsonEntry>(File.ReadAllText(file));
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+
 
 namespace OverrideLauncher.Core.Modules.Entry.DownloadEntry;
 
@@ -6,37 +7,37 @@ public class VersionManifestEntry
 {
     public class VersionManifest
     {
-        [JsonProperty("latest")]
+        [JsonPropertyName("latest")]
         public Latest Latest { get; set; }
 
-        [JsonProperty("versions")]
+        [JsonPropertyName("versions")]
         public Version[] Versions { get; set; }
     }
 
     public class Latest
     {
-        [JsonProperty("release")]
+        [JsonPropertyName("release")]
         public string Release { get; set; }
 
-        [JsonProperty("snapshot")]
+        [JsonPropertyName("snapshot")]
         public string Snapshot { get; set; }
     }
 
     public class Version
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
 
-        [JsonProperty("time")]
+        [JsonPropertyName("time")]
         public string Time { get; set; }
 
-        [JsonProperty("releaseTime")]
+        [JsonPropertyName("releaseTime")]
         public string ReleaseTime { get; set; }
     }
 }

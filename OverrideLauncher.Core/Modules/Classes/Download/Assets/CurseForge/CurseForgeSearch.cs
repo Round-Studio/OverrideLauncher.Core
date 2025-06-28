@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
+
 using OverrideLauncher.Core.Modules.Entry.DownloadEntry.DownloadAssetsEntry;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -82,7 +82,7 @@ public class CurseForgeSearch
             gameId,
         };
 
-        var json = JsonConvert.SerializeObject(requestBody);
+        var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         // 发送请求

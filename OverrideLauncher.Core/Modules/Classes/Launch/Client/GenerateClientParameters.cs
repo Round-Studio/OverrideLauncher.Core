@@ -2,9 +2,9 @@
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OverrideLauncher.Core.Modules.Entry.GameEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
@@ -32,7 +32,7 @@ public class GenerateClientParameters
         NativePath = Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName, "natives");
         
         string GameJson = File.ReadAllText(GameJsonPath);
-        GameJsonEntry = JsonConvert.DeserializeObject<GameJsonEntry>(GameJson);
+        GameJsonEntry = JsonSerializer.Deserialize<GameJsonEntry>(GameJson);
     }
     
     private void UnzipNativePacks(List<Artifact> NativePacks)
@@ -129,6 +129,8 @@ public class GenerateClientParameters
 
         foreach (var item in game)
         {
+            if (item == null) continue;
+            
             var tmp = item;
             foreach (var arg in Args)
             {
@@ -195,7 +197,6 @@ public class GenerateClientParameters
     private List<string> GetJVMArguments()
     {
         if(GameJsonEntry.Arguments==null) return new List<string>();
-        var jvmArgs = new List<string>();
         var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
 
@@ -204,30 +205,41 @@ public class GenerateClientParameters
             if (jvmItem is string)
             {
                 args.Add(jvmItem.ToString());
-            }else if (jvmItem is JObject ruleObject)
+            }else if (jvmItem is JsonObject ruleObject)
             {
-                var rules = ruleObject["rules"]?.ToObject<List<Rule>>();
-                var value = ruleObject["value"];
-
-                if (rules != null && value != null)
+                // 尝试获取 "rules" 数组并反序列化为 List<Rule>
+                if (ruleObject.TryGetPropertyValue("rules", out var rulesNode) &&
+                    rulesNode is JsonArray rulesArray)
                 {
-                    foreach (var rule in rules)
+                    var rules = rulesArray.Deserialize<List<Rule>>(new JsonSerializerOptions
                     {
-                        if (rule.Action == "allow")
+                        PropertyNameCaseInsensitive = true // 可选：不区分大小写
+                    });
+
+                    // 获取 "value" 字段
+                    if (ruleObject.TryGetPropertyValue("value", out var valueNode) &&
+                        valueNode != null)
+                    {
+                        string? value = valueNode.ToString();
+
+                        if (rules != null && value != null)
                         {
-                            if (!args.Contains(rule.ToString()))
+                            foreach (var rule in rules)
                             {
-                                if (os.Contains("windows") && rule.Os?.Name == "windows")
+                                if (rule.Action == "allow" && !args.Contains(rule.ToString()))
                                 {
-                                    if(value is string) args.Add(value.ToString());
-                                }
-                                else if (os.Contains("macos") || os.Contains("darwin") && rule.Os?.Name == "osx")
-                                {
-                                    args.Add(value.ToString());
-                                }
-                                else if (os.Contains("linux") && rule.Os?.Name == "linux")
-                                {
-                                    args.Add(value.ToString());
+                                    if (os.Contains("windows") && rule.Os?.Name == "windows")
+                                    {
+                                        args.Add(value);
+                                    }
+                                    else if ((os.Contains("macos") || os.Contains("darwin")) && rule.Os?.Name == "osx")
+                                    {
+                                        args.Add(value);
+                                    }
+                                    else if (os.Contains("linux") && rule.Os?.Name == "linux")
+                                    {
+                                        args.Add(value);
+                                    }
                                 }
                             }
                         }
@@ -240,31 +252,34 @@ public class GenerateClientParameters
     }
     private List<string> GetGameArguments()
     {
-        var gameArgs = new List<string>();
-        var os = RuntimeInformation.OSDescription.ToLower();
         var args = new List<string>();
 
-        if (GameJsonEntry.Arguments == null)
+        if (GameJsonEntry.MinecraftArguments != null)
         {
             args.Add(GameJsonEntry.MinecraftArguments);
         }
         else
         {
+            Console.WriteLine(GameJsonEntry.Arguments.Game.Count);
             foreach (var jvmItem in GameJsonEntry.Arguments.Game)
             {
-                if (jvmItem is string)
+                if (jvmItem is JsonElement strruleElement && strruleElement.ValueKind == JsonValueKind.String)
                 {
                     args.Add(jvmItem.ToString());
-                }else if (jvmItem is JObject ruleObject)
+                }else if (jvmItem is JsonElement ruleElement && ruleElement.ValueKind == JsonValueKind.Object)
                 {
-                    var rules = ruleObject["rules"]?.ToObject<List<Rule>>();
-                    var value = ruleObject["value"];
-
-                    if (rules != null && value != null)
+                    if (ruleElement.TryGetProperty("rules", out var rulesElement) &&
+                        rulesElement.ValueKind == JsonValueKind.Array)
                     {
-                        foreach (var rule in rules)
+                        var rules = JsonSerializer.Deserialize<List<Rule>>(rulesElement.GetRawText());
+        
+                        if (ruleElement.TryGetProperty("value", out var valueElement) &&
+                            valueElement.ValueKind != JsonValueKind.Null)
                         {
-                        
+                            foreach (var rule in rules ?? Enumerable.Empty<Rule>())
+                            {
+                                // 处理每个 rule
+                            }
                         }
                     }
                 }

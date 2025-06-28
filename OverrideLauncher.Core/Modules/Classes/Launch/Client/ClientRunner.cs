@@ -25,6 +25,9 @@ public class ClientRunner
                 RedirectStandardInput = true
             }
         };
+#if DEBUG
+        File.WriteAllText("args.bat",arg);
+#endif
         GameProcess.OutputDataReceived += (sender, args) =>
         {
             LogsOutput.Invoke(args.Data);
