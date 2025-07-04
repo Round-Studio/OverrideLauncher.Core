@@ -81,7 +81,7 @@ public class GenerateClientParameters
             ["${auth_uuid}"] = ClientRunnerInfo.Account.UUID,
             ["${auth_access_token}"] = ClientRunnerInfo.Account.Token,
             ["${user_type}"] = ClientRunnerInfo.Account.AccountType,
-            ["${version_type}"] = $"\"{ClientRunnerInfo.LauncherInfo}\"",
+            ["${version_type}"] = $"\"{ClientRunnerInfo.LauncherInfo}\"", 
             ["${launcher_name}"] = $"\"{ClientRunnerInfo.LauncherInfo}\"",
             ["${launcher_version}"] = ClientRunnerInfo.LauncherVersion,
             ["${auth_player_name}"] = ClientRunnerInfo.Account.UserName,
