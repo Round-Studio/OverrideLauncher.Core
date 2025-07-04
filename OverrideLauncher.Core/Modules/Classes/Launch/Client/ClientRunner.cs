@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 
@@ -8,6 +8,7 @@ public class ClientRunner
 {
     public Process GameProcess { get; set; }
     public Action<string> LogsOutput { get; set; } 
+    public Action GameExit { get; set; } 
     public ClientRunner(ClientRunnerInfo RunnerInfo)
     {
         var g = new GenerateClientParameters(RunnerInfo);
@@ -42,7 +43,11 @@ public class ClientRunner
         GameProcess.Start();
         GameProcess.BeginOutputReadLine();
         GameProcess.BeginErrorReadLine();
-        
-        GameProcess.WaitForExit();
+
+        Task.Run(() =>
+        {
+            GameProcess.WaitForExit();
+            GameExit.Invoke();
+        });
     }
 }
