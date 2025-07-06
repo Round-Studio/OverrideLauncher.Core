@@ -37,9 +37,25 @@ public class FileIntegrityChecker
         _version = JsonSerializer.Deserialize<GameJsonEntry>(
             File.ReadAllText(Path.Combine(_gamePath, "versions", versionInfo.ClientInstances.GameName,
                 $"{versionInfo.ClientInstances.GameName}.json")));
+        var assetsFilePath = Path.Combine(_gamePath, "assets", "indexes",
+            $"{_version.Assets}.json");
+
+        if (!File.Exists(assetsFilePath))
+        {
+            Directory.CreateDirectory(assetsFilePath.Replace(Path.GetFileName(assetsFilePath),""));
+            File.WriteAllText(assetsFilePath, GetAssetsJson(_version.AssetIndex.Url).Result);
+        };
+        
         _assets = JsonSerializer.Deserialize<AssetsEntry.RootObject>(
             File.ReadAllText(Path.Combine(_gamePath, "assets", "indexes",
                 $"{_version.Assets}.json")));
+    }
+    
+    public async Task<string> GetAssetsJson(string url)
+    {
+        HttpClient _httpClient = new HttpClient();
+        var json = await _httpClient.GetStringAsync(url);
+        return json;
     }
 
     public List<MissingFile> GetMissingFiles()
