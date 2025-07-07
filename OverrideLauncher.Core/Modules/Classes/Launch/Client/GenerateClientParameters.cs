@@ -72,6 +72,7 @@ public class GenerateClientParameters
         Dictionary<string, string> Args = new Dictionary<string, string>()
         {
             ["${natives_directory}"] = $"\"{NativePath}\"",
+            ["${library_directory}"] = $"\"{Path.Combine(ClientInfo.GameCatalog, "libraries")}\"",
             ["${classpath}"] = $"\"{SplicingCPArguments()}\"",
             ["${main_class}"] = GameJsonEntry.MainClass,
             ["${game_directory}"] = $"\"{Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName)}\"",
