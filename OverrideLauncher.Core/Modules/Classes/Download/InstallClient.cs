@@ -348,6 +348,29 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             // Prepare all download items
             var items = new Dictionary<string, string>();
             var os = RuntimeInformation.OSDescription.ToLower();
+
+            var notos1 = "";
+            var notos2 = "";
+
+            if (OperatingSystem.IsWindows())
+            {
+                os = "windows";
+                notos1 = "linux";
+                notos2 = "macos";
+            }
+            if (OperatingSystem.IsMacOS()) 
+            {
+                os = "macos";
+                notos1 = "linux";
+                notos2 = "windows";
+            }
+            if (OperatingSystem.IsLinux()) 
+            {
+                os = "linux";
+                notos1 = "windows";
+                notos2 = "macos";
+            }
+            
             bool isWindows = os.Contains("windows");
             bool isMacOS = os.Contains("macos") || os.Contains("darwin");
             bool isLinux = os.Contains("linux");
@@ -356,7 +379,9 @@ namespace OverrideLauncher.Core.Modules.Classes.Download
             {
                 if (library.Downloads?.Artifact != null)
                 {
-                    items.TryAdd(library.Downloads.Artifact.Path, library.Downloads.Artifact.Url);
+                    var path = library.Downloads.Artifact.Path;
+                    if (!path.Contains("natives") && !path.Contains(notos1) && !path.Contains(notos2)) 
+                        items.TryAdd(library.Downloads.Artifact.Path, library.Downloads.Artifact.Url);
                 }
 
                 if (library.Downloads?.Classifiers != null)
