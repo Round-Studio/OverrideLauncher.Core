@@ -7,7 +7,7 @@ using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 using OverrideLauncher.Core.Modules.Enum.Download;
 
-var installversion = "25w14craftmine";
+var installversion = "1.20.5";
 var version = installversion;
 
 /*InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
@@ -16,14 +16,14 @@ ins.DownloadThreadsCount = 512;
 Console.WriteLine(ins.GetThePreInstalledSize().Result);
 ins.Install("D:/.minecraft").Wait();*/
 
-FileIntegrityChecker fileIntegrityChecker = new FileIntegrityChecker(new VersionParse(new ClientInstancesInfo()
+/*FileIntegrityChecker fileIntegrityChecker = new FileIntegrityChecker(new VersionParse(new ClientInstancesInfo()
 {
     GameCatalog = "D:/Games/.minecraft",
     GameName = version
 })); // ver 参数是先前读取的游戏
 GameFileCompleter fileCompleter = new GameFileCompleter();
 fileCompleter.ProgressCallback = (@enum,logs, progress) => { Console.WriteLine($"{@enum} {logs} {progress}"); }; // 进度
-fileCompleter.DownloadMissingFilesAsync(fileIntegrityChecker.GetMissingFiles()).Wait();
+fileCompleter.DownloadMissingFilesAsync(fileIntegrityChecker.GetMissingFiles()).Wait();*/
 
 ClientRunner run = new ClientRunner(new ClientRunnerInfo()
 {

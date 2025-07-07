@@ -153,36 +153,63 @@ public class GenerateClientParameters
         var cp = new List<string>();
         var natives = new List<Artifact>();
         var os = RuntimeInformation.OSDescription.ToLower();
+
+        var notos1 = "";
+        var notos2 = "";
+
+        if (OperatingSystem.IsWindows())
+        {
+            os = "windows";
+            notos1 = "linux";
+            notos2 = "macos";
+        }
+        if (OperatingSystem.IsMacOS()) 
+        {
+            os = "macos";
+            notos1 = "linux";
+            notos2 = "windows";
+        }
+        if (OperatingSystem.IsLinux()) 
+        {
+            os = "linux";
+            notos1 = "windows";
+            notos2 = "macos";
+        }
+        
         foreach (var cpitem in GameJsonEntry.Libraries)
         {
-            if (cpitem.Downloads == null)
+            if (cpitem.Downloads != null)
             {
-                var rpath = FileHelper.GetJarFilePath(cpitem.Name);
-                var path = Path.GetFullPath(Path.Combine(librarypath, rpath));
+                if (cpitem.Name.Contains(os))
+                {
+                    var rpath = FileHelper.GetJarFilePath(cpitem.Name);
+                    var path = Path.GetFullPath(Path.Combine(librarypath, rpath));
            
-                cp.Add(path);
-                continue;
+                    cp.Add(path);
+                    continue;
+                }
             };
             
             if (cpitem.Downloads.Artifact != null)
             {
                 var path = Path.GetFullPath(Path.Combine(librarypath, Path.Combine(librarypath,cpitem.Downloads.Artifact.Path).Replace("3.2.1","3.2.2")));
-                if (!cp.Contains(path)) cp.Add(path);
+                if (cpitem.Name.Contains("natives") && path.Contains(os)) natives.Add(cpitem.Downloads.Artifact);
+                if (!cp.Contains(path) && !path.Contains("natives") && !path.Contains(notos1) && !path.Contains(notos2)) cp.Add(path);
             }
             
             if (cpitem.Downloads.Classifiers != null)
             {
-                if (os.Contains("windows") && cpitem.Downloads.Classifiers.Keys.Contains("natives-windows"))
+                if (os.Contains("windows") && cpitem.Downloads.Classifiers.Keys.Contains("windows"))
                 {
                     var item = cpitem.Downloads.Classifiers["natives-windows"];
                     if (item != null) natives.Add(item);
                 }
-                else if (os.Contains("macos") || os.Contains("darwin") && cpitem.Downloads.Classifiers.Keys.Contains("natives-macos"))
+                else if (os.Contains("macos") || os.Contains("darwin") && cpitem.Downloads.Classifiers.Keys.Contains("macos"))
                 {
                     var item = cpitem.Downloads.Classifiers["natives-macos"];
                     if (item != null) natives.Add(item);
                 }
-                else if (os.Contains("linux") && cpitem.Downloads.Classifiers.Keys.Contains("natives-linux"))
+                else if (os.Contains("linux") && cpitem.Downloads.Classifiers.Keys.Contains("linux"))
                 {
                     var item = cpitem.Downloads.Classifiers["natives-linux"];
                     if (item != null) natives.Add(item);
