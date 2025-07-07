@@ -189,14 +189,14 @@ public class GenerateClientParameters
                     cp.Add(path);
                     continue;
                 }
+                
+                if (cpitem.Downloads.Artifact != null)
+                {
+                    var path = Path.GetFullPath(Path.Combine(librarypath, Path.Combine(librarypath,cpitem.Downloads.Artifact.Path).Replace("3.2.1","3.2.2")));
+                    if (cpitem.Name.Contains("natives") && path.Contains(os)) natives.Add(cpitem.Downloads.Artifact);
+                    if (!cp.Contains(path) && !path.Contains("natives") && !path.Contains(notos1) && !path.Contains(notos2)) cp.Add(path);
+                }
             };
-            
-            if (cpitem.Downloads.Artifact != null)
-            {
-                var path = Path.GetFullPath(Path.Combine(librarypath, Path.Combine(librarypath,cpitem.Downloads.Artifact.Path).Replace("3.2.1","3.2.2")));
-                if (cpitem.Name.Contains("natives") && path.Contains(os)) natives.Add(cpitem.Downloads.Artifact);
-                if (!cp.Contains(path) && !path.Contains("natives") && !path.Contains(notos1) && !path.Contains(notos2)) cp.Add(path);
-            }
             
             if (cpitem.Downloads.Classifiers != null)
             {
