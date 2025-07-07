@@ -7,7 +7,7 @@ using OverrideLauncher.Core.Modules.Entry.JavaEntry;
 using OverrideLauncher.Core.Modules.Entry.LaunchEntry;
 using OverrideLauncher.Core.Modules.Enum.Download;
 
-var installversion = "1.20.5";
+var installversion = "Mystic's Monstrosity";
 var version = installversion;
 
 /*InstallClient ins = new InstallClient(DownloadVersionHelper.TryingFindVersion(installversion).Result, version);
@@ -30,15 +30,16 @@ ClientRunner run = new ClientRunner(new ClientRunnerInfo()
     Account = new OffineAuthenticator("test").Authenticator(),
     GameInstances = new VersionParse(new ClientInstancesInfo()
     {
-        GameCatalog = "D:/Games/.minecraft",
+        GameCatalog = "G:\\Minecraft\\.minecraft",
         GameName = version
     }),
     JavaInfo = new JavaInfo()
     {
-        JavaPath = "C:\\Program Files\\Java\\jdk-22\\bin\\java.exe"
+        JavaPath = "C:\\Program Files\\Java\\jdk-19\\bin\\java.exe"
     },
     LauncherInfo = "RMCL"
 });
+run.GameExit = () => { };
 run.LogsOutput = s => Console.WriteLine(s);
 run.Start();
 

@@ -196,26 +196,26 @@ public class GenerateClientParameters
                     if (cpitem.Name.Contains("natives") && path.Contains(os)) natives.Add(cpitem.Downloads.Artifact);
                     if (!cp.Contains(path) && !path.Contains("natives") && !path.Contains(notos1) && !path.Contains(notos2)) cp.Add(path);
                 }
+                
+                if (cpitem.Downloads.Classifiers != null)
+                {
+                    if (os.Contains("windows") && cpitem.Downloads.Classifiers.Keys.Contains("windows"))
+                    {
+                        var item = cpitem.Downloads.Classifiers["natives-windows"];
+                        if (item != null) natives.Add(item);
+                    }
+                    else if (os.Contains("macos") || os.Contains("darwin") && cpitem.Downloads.Classifiers.Keys.Contains("macos"))
+                    {
+                        var item = cpitem.Downloads.Classifiers["natives-macos"];
+                        if (item != null) natives.Add(item);
+                    }
+                    else if (os.Contains("linux") && cpitem.Downloads.Classifiers.Keys.Contains("linux"))
+                    {
+                        var item = cpitem.Downloads.Classifiers["natives-linux"];
+                        if (item != null) natives.Add(item);
+                    }
+                }
             };
-            
-            if (cpitem.Downloads.Classifiers != null)
-            {
-                if (os.Contains("windows") && cpitem.Downloads.Classifiers.Keys.Contains("windows"))
-                {
-                    var item = cpitem.Downloads.Classifiers["natives-windows"];
-                    if (item != null) natives.Add(item);
-                }
-                else if (os.Contains("macos") || os.Contains("darwin") && cpitem.Downloads.Classifiers.Keys.Contains("macos"))
-                {
-                    var item = cpitem.Downloads.Classifiers["natives-macos"];
-                    if (item != null) natives.Add(item);
-                }
-                else if (os.Contains("linux") && cpitem.Downloads.Classifiers.Keys.Contains("linux"))
-                {
-                    var item = cpitem.Downloads.Classifiers["natives-linux"];
-                    if (item != null) natives.Add(item);
-                }
-            }
         }
         UnzipNativePacks(natives);
         cp.Add(Path.Combine(ClientInfo.GameCatalog, "versions", ClientInfo.GameName, $"{ClientInfo.GameName}.jar"));

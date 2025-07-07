@@ -6,7 +6,7 @@ namespace OverrideLauncher.Core.Modules.Classes.Launch.Client;
 
 public class ClientRunner
 {
-    public Process GameProcess { get; set; }
+    public Process GameProcess { get; set; } = new Process();
     public Action<string> LogsOutput { get; set; } 
     public Action GameExit { get; set; } 
     public ClientRunner(ClientRunnerInfo RunnerInfo)
