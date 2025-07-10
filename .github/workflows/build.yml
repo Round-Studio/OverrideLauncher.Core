@@ -2,7 +2,7 @@ name: build
 on:
   workflow_dispatch:
   push:
-    branches: [ "**" ]
+    branches: [ "v1" ]
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
