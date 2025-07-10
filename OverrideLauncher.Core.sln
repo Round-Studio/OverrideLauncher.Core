@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverrideLauncher.Core", "src\OverrideLauncher.Core\OverrideLauncher.Core.csproj", "{D25C74A3-0823-418A-8D90-C1C427326EE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverrideLauncher.Core.Example", "src\OverrideLauncher.Core.Example\OverrideLauncher.Core.Example.csproj", "{0CAA5326-A1B3-41DB-BDEA-7ECEE42E5707}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D25C74A3-0823-418A-8D90-C1C427326EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D25C74A3-0823-418A-8D90-C1C427326EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D25C74A3-0823-418A-8D90-C1C427326EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D25C74A3-0823-418A-8D90-C1C427326EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CAA5326-A1B3-41DB-BDEA-7ECEE42E5707}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CAA5326-A1B3-41DB-BDEA-7ECEE42E5707}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CAA5326-A1B3-41DB-BDEA-7ECEE42E5707}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CAA5326-A1B3-41DB-BDEA-7ECEE42E5707}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
