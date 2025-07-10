@@ -1,11 +1,12 @@
-﻿using OverrideLauncher.Core.Base.Entry.Download;
+﻿using Downloader;
+using OverrideLauncher.Core.Base.Entry.Download;
 
 namespace OverrideLauncher.Core.Interface.Download;
 
 public class Download
 {
     #region Static
-    public static int DownloadCount = 512;
+    public static int DownloadThreadCount = 512;
     #endregion
 
     #region Public
@@ -13,7 +14,7 @@ public class Download
     public ulong FileCount { get; set; } = 0;
     public ulong DownloadedFileCount { get; set; } = 0;
     
-    public async void DownloadFile(DownloadFileInfo info)
+    public void DownloadFile(DownloadFileInfo info)
     {
         if (info.Size <= 41943040) // 5MB
         {
@@ -24,14 +25,16 @@ public class Download
     
     #region Private
 
-    private async void DownloadSmallFile(DownloadFileInfo info)
+    private void DownloadSmallFile(DownloadFileInfo info)
     {
-        
+        DownloadService download = new DownloadService();
+        download.DownloadFileTaskAsync(info.Url, info.FileName).Wait();
     }
 
-    private async void DownloadLargeFile(DownloadFileInfo info)
+    private void DownloadLargeFile(DownloadFileInfo info)
     {
-        
+        DownloadService download = new DownloadService();
+        download.DownloadFileTaskAsync(info.Url, info.FileName).Wait();
     }
     #endregion
 }

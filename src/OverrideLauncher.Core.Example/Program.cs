@@ -3,6 +3,7 @@ using OverrideLauncher.Core.Classes.Install;
 using OverrideLauncher.Core.Classes.Install.Manifest;
 
 InstallClient install = new InstallClient(await InstallHelper.TryingFindVersion("1.17.1"));
+install.DownloadStatusChanged += (sender, entry) => Console.WriteLine(entry.Progress);
 await install.Install(new InstallClientInfo()
 {
     InstallName = "测试",
