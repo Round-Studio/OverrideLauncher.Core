@@ -1,9 +1,10 @@
 ﻿using Downloader;
 using OverrideLauncher.Core.Base.Entry.Download;
+using OverrideLauncher.Core.Base.Entry.Download.Install;
 
 namespace OverrideLauncher.Core.Interface.Download;
 
-public class Download
+public class IDownload
 {
     #region Static
     // 固定高性能配置 - 512并发
@@ -17,6 +18,7 @@ public class Download
     #region Public
 
     public ulong FileCount { get; set; } = 0;
+    public EventHandler<DownloadStatusChangedEntry> DownloadStatusChanged;
 
     public async Task DownloadFileAsync(DownloadFileInfo info, IProgress<double>? progress = null)
     {

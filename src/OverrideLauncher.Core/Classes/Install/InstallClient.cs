@@ -11,12 +11,9 @@ using OverrideLauncher.Core.Interface.Download;
 
 namespace OverrideLauncher.Core.Classes.Install;
 
-public class InstallClient : Download
+public class InstallClient : IDownload
 {
     #region Public
-    public ManifestClientJson ManifestClientJson { get; set; }
-    public ManifestClientAssetsJson ManifestClientAssetsJson { get; set; }
-    public EventHandler<DownloadStatusChangedEntry> DownloadStatusChanged;
     public InstallClient(ManifestMojang.ManifestVersion manifestVersion)
     {
         _installName = manifestVersion.Id;
@@ -41,6 +38,8 @@ public class InstallClient : Download
     #region Private
     private string _installName { get; set; }
     private InstallClientInfo _installClientInfo { get; set; }
+    private ManifestClientAssetsJson ManifestClientAssetsJson { get; set; }
+    private ManifestClientJson ManifestClientJson { get; set; }
     private DownloadListEntry downloadList { get; set; } = new();
 
     // 按文件类型分别统计
@@ -178,10 +177,6 @@ public class InstallClient : Download
                     success = true;
                     skipped = true;
                 }
-                else
-                {
-                    Console.WriteLine($"重新下载: {Path.GetFileName(file.FileInfo.FileName)} (大小不匹配: 本地={FormatFileSize(fileInfo.Length)}, 期望={FormatFileSize((long)file.FileInfo.Size)})");
-                }
             }
 
             // 检查该文件类型是否只有一个文件（需要实时进度）
@@ -257,7 +252,7 @@ public class InstallClient : Download
                         Progress = typeProgress,
                         Status = status,
                         FileType = file.Type,
-                        CurrentFileName = Path.GetFileName(file.FileInfo.FileName) + (skipped ? " (跳过)" : ""),
+                        CurrentFileName = Path.GetFileName(file.FileInfo.FileName),
                         CompletedFiles = stats.CompletedFiles,
                         TotalFiles = stats.TotalFiles
                     });
@@ -304,7 +299,7 @@ public class InstallClient : Download
             {
                 var hash = asset.Value.Hash;
                 var hashPrefix = hash.Substring(0, 2);
-                var url = $"{DictionaryDownloadHost.RootHost}/{hashPrefix}/{hash}";
+                var url = $"{DictionaryDownloadHost.Sources.ResourceHost}/{hashPrefix}/{hash}";
                 var fileName = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.AssetsObjectPath, hashPrefix, hash);
 
                 list.Add(new DownloadListEntry.DownloadFileItem()

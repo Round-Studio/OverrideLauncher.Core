@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using OverrideLauncher.Core.Base.Dictionary;
+using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 namespace OverrideLauncher.Core.Classes.Install.Manifest;
@@ -34,7 +35,7 @@ public class InstallHelper
             }
         }
             
-        string url = DictionaryDownloadHost.ManifestHost; // ManifestHost
+        string url = DictionaryDownloadHost.Sources.ManifestHost; // ManifestHost
         try
         {
             // 获取JSON内容
@@ -49,7 +50,33 @@ public class InstallHelper
             return null;
         }
     }
+    public static async Task<List<FabricLoaderVersion>> GetVersionFabricManifest(string id)
+    {
+        async Task<string> GetJsonContentAsync(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+            
+        string url = $"{DictionaryDownloadHost.Sources.FabricHost}/versions/loader/{id}"; // FabricManifestHost
+        try
+        {
+            // 获取JSON内容
+            string jsonContent = await GetJsonContentAsync(url);
 
+            // 反序列化为FabricProfile对象
+            List<FabricLoaderVersion> fabricProfile = JsonSerializer.Deserialize<List<FabricLoaderVersion>>(jsonContent);
+            return fabricProfile;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
     public static async Task<ManifestClientJson> TryingGetClientJson(ManifestMojang.ManifestVersion version)
     {
         async Task<string> GetJsonContentAsync(string url)
@@ -77,7 +104,6 @@ public class InstallHelper
             return null;
         }
     }
-
     public static async Task<ManifestClientAssetsJson> TryingGetClientAssetsJson(ManifestClientJson version)
     {
         async Task<string> GetJsonContentAsync(string url)

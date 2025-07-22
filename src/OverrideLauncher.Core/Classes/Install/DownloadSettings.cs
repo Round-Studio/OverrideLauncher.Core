@@ -8,33 +8,33 @@ public class DownloadSettings
     /// <summary>
     /// 最大并行下载数（默认基于CPU核心数）
     /// </summary>
-    public int MaxParallelDownloads { get; set; } = Math.Max(16, Environment.ProcessorCount * 8);
+    public int MaxParallelDownloads { get; set; } = 512;
 
     /// <summary>
     /// 小文件最大并行数
     /// </summary>
-    public int MaxSmallFileParallel { get; set; } = Math.Max(32, Environment.ProcessorCount * 16);
+    public int MaxSmallFileParallel { get; set; } = 256;
 
     /// <summary>
     /// 大文件最大并行数
     /// </summary>
-    public int MaxLargeFileParallel { get; set; } = Math.Max(8, Environment.ProcessorCount * 2);
+    public int MaxLargeFileParallel { get; set; } = 128;
 
     /// <summary>
     /// 大文件阈值（字节）
     /// </summary>
-    public int LargeFileThreshold { get; set; } = 10 * 1024 * 1024; // 10MB
+    public int LargeFileThreshold { get; set; } = 1 * 1024 * 1024;
 
     /// <summary>
     /// 每个大文件的最大分片数
     /// </summary>
-    public int MaxChunksPerFile { get; set; } = 16;
+    public int MaxChunksPerFile { get; set; } = 8;
 
     /// <summary>
     /// 重试次数
     /// </summary>
     public int RetryAttempts { get; set; } = 3;
-
+    
     /// <summary>
     /// 重试延迟（毫秒）
     /// </summary>
@@ -54,16 +54,6 @@ public class DownloadSettings
     /// 缓冲区大小（字节）
     /// </summary>
     public int BufferSize { get; set; } = 32768; // 32KB
-
-    /// <summary>
-    /// 是否启用性能监控
-    /// </summary>
-    public bool EnablePerformanceMonitoring { get; set; } = true;
-
-    /// <summary>
-    /// 是否启用详细日志
-    /// </summary>
-    public bool EnableVerboseLogging { get; set; } = false;
 
     /// <summary>
     /// 创建默认配置
@@ -141,7 +131,7 @@ public class DownloadSettings
     {
         Validate();
         
-        var downloadClass = typeof(OverrideLauncher.Core.Interface.Download.Download);
+        var downloadClass = typeof(OverrideLauncher.Core.Interface.Download.IDownload);
         
         // 使用反射设置静态属性
         downloadClass.GetField("MaxParallelDownloads")?.SetValue(null, MaxParallelDownloads);

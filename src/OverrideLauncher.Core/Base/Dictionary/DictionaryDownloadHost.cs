@@ -2,10 +2,8 @@
 
 public class DictionaryDownloadHost
 {
-    // 官方源
-    public static string ManifestHost = "https://piston-meta.mojang.com/mc/game/version_manifest.json";
-    public static string RootHost = "https://resources.download.minecraft.net";
-    public static string AssetsRoute = "/{hash:2}/{hash}";
+    // 源
+    public static MirrorConfig Sources;
 
     // 镜像源配置 - 可以根据网络情况切换
     public static readonly Dictionary<string, MirrorConfig> MirrorSources = new()
@@ -15,7 +13,10 @@ public class DictionaryDownloadHost
             Name = "官方源",
             ManifestHost = "https://piston-meta.mojang.com/mc/game/version_manifest.json",
             ResourceHost = "https://resources.download.minecraft.net",
-            LibrariesHost = "https://libraries.minecraft.net"
+            LibrariesHost = "https://libraries.minecraft.net",
+            
+            FabricHost = "https://meta.fabricmc.net/v2",
+            FabricResourceHost = "https://maven.fabricmc.net"
         },
         ["bmclapi"] = new MirrorConfig
         {
@@ -38,9 +39,7 @@ public class DictionaryDownloadHost
         if (MirrorSources.ContainsKey(mirrorKey))
         {
             CurrentMirror = mirrorKey;
-            var config = MirrorSources[mirrorKey];
-            ManifestHost = config.ManifestHost;
-            RootHost = config.ResourceHost;
+            Sources = MirrorSources[mirrorKey];
         }
     }
 
@@ -59,4 +58,7 @@ public class MirrorConfig
     public string ManifestHost { get; set; }
     public string ResourceHost { get; set; }
     public string LibrariesHost { get; set; }
+    
+    public string FabricHost { get; set; }
+    public string FabricResourceHost { get; set; }
 }
