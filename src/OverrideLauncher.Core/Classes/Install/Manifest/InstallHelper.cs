@@ -66,8 +66,6 @@ public class InstallHelper
         string url = $"{DictionaryDownloadHost.Sources.FabricHost}/versions/loader/{id}"; // FabricMan
         // 获取JSON内容
         string jsonContent = await GetJsonContentAsync(url);
-            
-        Console.WriteLine(jsonContent);
 
         // 反序列化为FabricProfile对象
         List<FabricLoaderVersion> fabricProfile = JsonSerializer.Deserialize<List<FabricLoaderVersion>>(jsonContent);
@@ -148,7 +146,6 @@ public class InstallHelper
         
         File.WriteAllText(path, JsonSerializer.Serialize(json));
     }
-
     public static async Task<List<FabricApiEntry.FabricApiVersion>> GetFabricApiVersionsManifest()
     {
         HttpClient client = new HttpClient();
@@ -176,5 +173,22 @@ public class InstallHelper
             if (x.GameVersions.Contains(id)) res.Add(x);
         });
         return res;
+    }
+
+    public static string ConvertToMavenPath(string mavenCoordinate, string extension = "jar")
+    {
+        // 使用 Span 和范围语法处理分割
+        ReadOnlySpan<char> coordinateSpan = mavenCoordinate.AsSpan();
+        int firstColon = coordinateSpan.IndexOf(':');
+        int lastColon = coordinateSpan.LastIndexOf(':');
+
+        // 提取各部分
+        var groupId = coordinateSpan[..firstColon].ToString();
+        var artifactId = coordinateSpan[(firstColon + 1)..lastColon].ToString();
+        var version = coordinateSpan[(lastColon + 1)..].ToString();
+
+        string groupPath = groupId.Replace('.', '/');
+        string fileName = $"{artifactId}-{version}.{extension}";
+        return $"{groupPath}/{artifactId}/{version}/{fileName}";
     }
 }
