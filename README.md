@@ -1,6 +1,10 @@
-# OverrideLauncher.Core
+<p align="center">
+<img src="docs/assets/logo.png" height="200">
+</p>
+<p align="center">
+<h1 align="center">OverrideLauncher.Core</h1>
+</p>
 
-![Logo](./logo.png)
 
 > [!CAUTION]
 >当前启动核心正在进行死亡性重构，当前分支为重构开发版。
