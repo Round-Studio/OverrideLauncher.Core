@@ -54,7 +54,7 @@ if (choose.Key == ConsoleKey.D1)
         }
     };
 
-    await install.Install(new InstallClientInfo()
+    await install.Install(new ClientRootInfo()
     {
         InstallName = installname,
         InstallPath = "G:\\testmc"
@@ -64,14 +64,27 @@ if (choose.Key == ConsoleKey.D1)
     Console.WriteLine($"\n下载完成！总耗时: {stopwatch.Elapsed:mm\\:ss}");
 }
 
+if (choose.Key == ConsoleKey.D2)
+{
+    var fabi = new InstallerFabric(InstallHelper.GetVersionFabricManifest(installname).Result.First());
+    fabi.Install(new ClientRootInfo()
+    {
+        InstallName = installname,
+        InstallPath = "D:\\testmc"
+    }).Wait();
+}
+
 if (choose.Key == ConsoleKey.D3)
 {
     Console.WriteLine($"\n开始下载 Minecraft {installname}...");
     var stopwatch = Stopwatch.StartNew();
 
+    var fabricman = await InstallHelper.GetVersionFabricManifest(installname);
+
     InstallerCollection install = new InstallerCollection(new InstallerCollectionEntry()
     {
-        VanillaManifest = await InstallHelper.TryingFindVersion(installname)
+        VanillaManifest = await InstallHelper.TryingFindVersion(installname),
+        FabricVersion = fabricman.First()
     });
 
     var lastProgress = 0.0;
@@ -92,10 +105,10 @@ if (choose.Key == ConsoleKey.D3)
         }
     };
 
-    install.Install(new InstallClientInfo()
+    install.Install(new ClientRootInfo()
     {
         InstallName = installname,
-        InstallPath = "G:\\testmc"
+        InstallPath = "D:\\testmc"
     });
 
     stopwatch.Stop();

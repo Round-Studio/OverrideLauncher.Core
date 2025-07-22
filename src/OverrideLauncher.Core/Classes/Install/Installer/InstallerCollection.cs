@@ -10,6 +10,7 @@ public class InstallerCollection
     public EventHandler<DownloadStatusChangedEntry> DownloadStatusChanged;
     
     public InstallerVanilla VanillaInstaller { get; private set; }
+    public InstallerFabric FabricInstaller { get; private set; }
     
     public InstallerCollection(InstallerCollectionEntry installerCE)
     {
@@ -23,12 +24,22 @@ public class InstallerCollection
                 DownloadStatusChanged?.Invoke(this, entry);
             };
         }
+
+        if (installerCE.FabricVersion != null)
+        {
+            FabricInstaller = new InstallerFabric(installerCE.FabricVersion);
+            FabricInstaller.DownloadStatusChanged += (sender, entry) =>
+            {
+                DownloadStatusChanged?.Invoke(this, entry);
+            };
+        }
     }
     
-    public void Install(InstallClientInfo info)
+    public void Install(ClientRootInfo rootInfo)
     {
+        VanillaInstaller.Install(rootInfo).Wait();
         var ien = new List<Task>();
-        ien.Add(VanillaInstaller.Install(info));
+        if (FabricInstaller != null) ien.Add(FabricInstaller.Install(rootInfo));
 
         Task.WaitAll(ien.ToArray());
     }

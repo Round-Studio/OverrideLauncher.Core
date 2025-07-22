@@ -21,10 +21,10 @@ public class InstallClient : IDownload
         ManifestClientAssetsJson = InstallHelper.TryingGetClientAssetsJson(ManifestClientJson).Result;
     }
 
-    public async Task Install(InstallClientInfo info)
+    public async Task Install(ClientRootInfo rootInfo)
     {
-        _installClientInfo = info;
-        if(!string.IsNullOrEmpty(info.InstallName)) _installName = info.InstallName;
+        ClientRootInfo = rootInfo;
+        if(!string.IsNullOrEmpty(rootInfo.InstallName)) _installName = rootInfo.InstallName;
         
         SaveJson();
         PrepareFiles();
@@ -37,7 +37,7 @@ public class InstallClient : IDownload
     
     #region Private
     private string _installName { get; set; }
-    private InstallClientInfo _installClientInfo { get; set; }
+    private ClientRootInfo ClientRootInfo { get; set; }
     private ManifestClientAssetsJson ManifestClientAssetsJson { get; set; }
     private ManifestClientJson ManifestClientJson { get; set; }
     private DownloadListEntry downloadList { get; set; } = new();
@@ -55,9 +55,9 @@ public class InstallClient : IDownload
     }
     private void SaveJson()
     {
-        var versionJsonPath = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.VersionsPath,
+        var versionJsonPath = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.VersionsPath,
             _installName, $"{_installName}.json");
-        var assetsJsonPath = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.AssetsIndexPath,
+        var assetsJsonPath = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.AssetsIndexPath,
             $"{ManifestClientJson.AssetIndex.Id}.json");
         
         Directory.CreateDirectory(Path.GetDirectoryName(versionJsonPath));
@@ -76,7 +76,7 @@ public class InstallClient : IDownload
             {
                 Size = (ulong)ManifestClientJson.Downloads.Client.Size,
                 Url = ManifestClientJson.Downloads.Client.Url,
-                FileName = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.VersionsPath, _installName,
+                FileName = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.VersionsPath, _installName,
                     $"{_installName}.jar")
             }
         }); // 添加本体文件
@@ -277,7 +277,7 @@ public class InstallClient : IDownload
                     Type = FileType.JarFile,
                     FileInfo = new()
                     {
-                        FileName = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.LibrariesPath,x.Downloads.Artifact.Path),
+                        FileName = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.LibrariesPath,x.Downloads.Artifact.Path),
                         Url = x.Downloads.Artifact.Url,
                         Size = (ulong)x.Downloads.Artifact.Size,
                         Hash = x.Downloads.Artifact.Sha1
@@ -300,7 +300,7 @@ public class InstallClient : IDownload
                 var hash = asset.Value.Hash;
                 var hashPrefix = hash.Substring(0, 2);
                 var url = $"{DictionaryDownloadHost.Sources.ResourceHost}/{hashPrefix}/{hash}";
-                var fileName = Path.Combine(_installClientInfo.InstallPath, DictionaryGameRoot.AssetsObjectPath, hashPrefix, hash);
+                var fileName = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.AssetsObjectPath, hashPrefix, hash);
 
                 list.Add(new DownloadListEntry.DownloadFileItem()
                 {

@@ -1,9 +1,11 @@
 ﻿using System.Text.Json.Serialization;
+using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 
 namespace OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 public class ManifestClientJson
 {
+    [JsonPropertyName("modLoader")] public List<ModLoaderInfo> ModLoader { get; set; } = new ();
     [JsonPropertyName("minecraftArguments")] public string MinecraftArguments { get; set; }
 
     [JsonPropertyName("arguments")] public ArgumentsEntry Arguments { get; set; }
@@ -130,6 +132,8 @@ public class ManifestClientJson
         [JsonPropertyName("name")] public string Name { get; set; }
 
         [JsonPropertyName("url")] public string Url { get; set; }
+
+        [JsonPropertyName("size")] public ulong Size { get; set; }
 
         [JsonPropertyName("natives")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

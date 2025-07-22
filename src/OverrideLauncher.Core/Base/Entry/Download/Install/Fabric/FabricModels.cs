@@ -46,7 +46,7 @@ public class FabricIntermediaryVersion
 public class FabricLauncherMeta
 {
     [JsonPropertyName("version")]
-    public string Version { get; set; }
+    public int Version { get; set; }
 
     [JsonPropertyName("libraries")]
     public Libraries Libraries { get; set; }
@@ -61,19 +61,19 @@ public class Libraries
     public object[] Client { get; set; }
     
     [JsonPropertyName("common")]
-    public Common[] Ccommon { get; set; }
+    public List<Common> Common { get; set; }
 }
 
 public class Common
 {
-    [JsonPropertyName("Name")]
-    public string name { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
     
-    [JsonPropertyName("Url")]
-    public string url { get; set; }
+    [JsonPropertyName("url")]
+    public string Url { get; set; }
     
-    [JsonPropertyName("Size")]
-    public int size { get; set; }
+    [JsonPropertyName("size")]
+    public int Size { get; set; }
 }
 
 public class MainClass

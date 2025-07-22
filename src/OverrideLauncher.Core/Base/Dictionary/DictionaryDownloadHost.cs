@@ -16,14 +16,19 @@ public class DictionaryDownloadHost
             LibrariesHost = "https://libraries.minecraft.net",
             
             FabricHost = "https://meta.fabricmc.net/v2",
-            FabricResourceHost = "https://maven.fabricmc.net"
+            FabricResourceHost = "https://maven.fabricmc.net",
+            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version"
         },
         ["bmclapi"] = new MirrorConfig
         {
             Name = "BMCLAPI镜像",
             ManifestHost = "https://bmclapi2.bangbang93.com/mc/game/version_manifest.json",
             ResourceHost = "https://bmclapi2.bangbang93.com/assets",
-            LibrariesHost = "https://bmclapi2.bangbang93.com/maven"
+            LibrariesHost = "https://bmclapi2.bangbang93.com/maven",
+            
+            FabricHost = "https://bmclapi2.bangbang93.com/fabric-meta/v2",
+            FabricResourceHost = "https://bmclapi2.bangbang93.com/maven",
+            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version"
         }
     };
 
@@ -61,4 +66,5 @@ public class MirrorConfig
     
     public string FabricHost { get; set; }
     public string FabricResourceHost { get; set; }
+    public string FabricAPIModURL { get; set; }
 }

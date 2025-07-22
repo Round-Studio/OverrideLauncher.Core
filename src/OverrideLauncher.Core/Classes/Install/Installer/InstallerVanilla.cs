@@ -16,8 +16,8 @@ public class InstallerVanilla : IDownload
         };
     }
 
-    public async Task Install(InstallClientInfo info)
+    public async Task Install(ClientRootInfo rootInfo)
     {
-        await _installClient.Install(info);
+        await _installClient.Install(rootInfo);
     }
 }

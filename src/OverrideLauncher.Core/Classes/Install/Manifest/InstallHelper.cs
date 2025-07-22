@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using OverrideLauncher.Core.Base.Dictionary;
+using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
@@ -62,20 +63,27 @@ public class InstallHelper
             }
         }
             
-        string url = $"{DictionaryDownloadHost.Sources.FabricHost}/versions/loader/{id}"; // FabricManifestHost
-        try
-        {
-            // 获取JSON内容
-            string jsonContent = await GetJsonContentAsync(url);
+        string url = $"{DictionaryDownloadHost.Sources.FabricHost}/versions/loader/{id}"; // FabricMan
+        // 获取JSON内容
+        string jsonContent = await GetJsonContentAsync(url);
+            
+        Console.WriteLine(jsonContent);
 
-            // 反序列化为FabricProfile对象
-            List<FabricLoaderVersion> fabricProfile = JsonSerializer.Deserialize<List<FabricLoaderVersion>>(jsonContent);
-            return fabricProfile;
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+        // 反序列化为FabricProfile对象
+        List<FabricLoaderVersion> fabricProfile = JsonSerializer.Deserialize<List<FabricLoaderVersion>>(jsonContent);
+        return fabricProfile;
+    }
+    public static ManifestClientJson? GetClientJsonEntry(ClientRootInfo rootInfo)
+    {
+        if (rootInfo == null) throw new NullReferenceException();
+        
+        var path = Path.Combine(rootInfo.InstallPath,
+            DictionaryGameRoot.VersionsPath, rootInfo.InstallName, $"{rootInfo.InstallName}.json");
+        
+        if (!File.Exists(path)) throw new FileNotFoundException($"未找到 {rootInfo.InstallName}.json");
+        if (string.IsNullOrEmpty(File.ReadAllText(path))) throw new NullReferenceException();
+        
+        return JsonSerializer.Deserialize<ManifestClientJson>(File.ReadAllText(path));
     }
     public static async Task<ManifestClientJson> TryingGetClientJson(ManifestMojang.ManifestVersion version)
     {
@@ -130,5 +138,43 @@ public class InstallHelper
         {
             return null;
         }
+    }
+    public static void SaveClientJson(ManifestClientJson json, ClientRootInfo rootInfo)
+    {
+        if (rootInfo == null) throw new NullReferenceException();
+        
+        var path = Path.Combine(rootInfo.InstallPath,
+            DictionaryGameRoot.VersionsPath, rootInfo.InstallName, $"{rootInfo.InstallName}.json");
+        
+        File.WriteAllText(path, JsonSerializer.Serialize(json));
+    }
+
+    public static async Task<List<FabricApiEntry.FabricApiVersion>> GetFabricApiVersionsManifest()
+    {
+        HttpClient client = new HttpClient();
+        string projectId = "P7dR8mSH";
+        string apiUrl = $"https://api.modrinth.com/v2/project/{projectId}/version";
+            
+        // 设置User-Agent头(Modrinth API要求)
+        client.DefaultRequestHeaders.Add("User-Agent", "ModrinthApp");
+            
+        var response = await client.GetAsync(apiUrl);
+        response.EnsureSuccessStatusCode();
+            
+        var responseBody = await response.Content.ReadAsStringAsync();
+            
+        // 反序列化JSON到Version对象列表
+        List<FabricApiEntry.FabricApiVersion> versions = JsonSerializer.Deserialize<List<FabricApiEntry.FabricApiVersion>>(responseBody);
+        return versions;
+    }
+    public static async Task<List<FabricApiEntry.FabricApiVersion>> TryGetFabricApiVersions(string id)
+    {
+        var lst = await GetFabricApiVersionsManifest();
+        var res = new List<FabricApiEntry.FabricApiVersion>();
+        lst.ForEach(x =>
+        {
+            if (x.GameVersions.Contains(id)) res.Add(x);
+        });
+        return res;
     }
 }
