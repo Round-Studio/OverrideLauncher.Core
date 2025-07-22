@@ -9,7 +9,7 @@ public class IDownload
     #region Static
     // 固定高性能配置 - 512并发
     public static int MaxParallelDownloads = 512; // 固定512并发
-    public static int LargeFileThreshold = 1 * 1024 * 1024; // 1MB阈值
+    public static int LargeFileThreshold = 5 * 1024 * 1024; // 5MB阈值
     public static int MaxChunksPerFile = 8; // 每个文件最大8分片
     public static int RetryAttempts = 3; // 重试次数
     public static TimeSpan RetryDelay = TimeSpan.FromMilliseconds(500); // 500ms重试延迟
