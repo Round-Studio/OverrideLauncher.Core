@@ -13,34 +13,48 @@ Console.WriteLine($"固定并发数: 512");
 DictionaryDownloadHost.SwitchMirror("official");
 Console.WriteLine($"使用镜像源: {DictionaryDownloadHost.GetCurrentMirror().Name}");
 
-Console.WriteLine($"\n开始下载 Minecraft {installname}...");
-var stopwatch = Stopwatch.StartNew();
+Console.WriteLine("=== 请选择下载内容 ===");
+Console.WriteLine("1. 安装原版游戏");
+Console.WriteLine("2. 安装 Fabric");
 
-InstallClient install = new InstallClient(await InstallHelper.TryingFindVersion(installname));
+var choose = Console.ReadKey();
 
-var lastProgress = 0.0;
-var lastTime = DateTime.Now;
-
-install.DownloadStatusChanged += (sender, entry) =>
+if (choose.Key == ConsoleKey.D1)
 {
-    var now = DateTime.Now;
-    var timeDiff = (now - lastTime).TotalSeconds;
 
-    if (timeDiff > 0)
+    Console.WriteLine($"\n开始下载 Minecraft {installname}...");
+    var stopwatch = Stopwatch.StartNew();
+
+    InstallClient install = new InstallClient(await InstallHelper.TryingFindVersion(installname));
+
+    var lastProgress = 0.0;
+    var lastTime = DateTime.Now;
+
+    install.DownloadStatusChanged += (sender, entry) =>
     {
-        Console.WriteLine($"[{entry.FileType}] {entry.Status} - 进度: {entry.Progress:F}% ({entry.CompletedFiles}/{entry.TotalFiles}) - 当前文件: {entry.CurrentFileName}");
+        var now = DateTime.Now;
+        var timeDiff = (now - lastTime).TotalSeconds;
 
-        lastProgress = entry.Progress;
-        lastTime = now;
-    }
-};
+        if (timeDiff > 0)
+        {
+            Console.WriteLine($"[{entry.FileType}] {entry.Status} - 进度: {entry.Progress:F}% ({entry.CompletedFiles}/{entry.TotalFiles}) - 当前文件: {entry.CurrentFileName}");
 
-await install.Install(new InstallClientInfo()
+            lastProgress = entry.Progress;
+            lastTime = now;
+        }
+    };
+
+    await install.Install(new InstallClientInfo()
+    {
+        InstallName = installname,
+        InstallPath = "G:\\testmc"
+    });
+
+    stopwatch.Stop();
+    Console.WriteLine($"\n下载完成！总耗时: {stopwatch.Elapsed:mm\\:ss}");
+}
+
+if (choose.Key == ConsoleKey.D2)
 {
-    InstallName = installname,
-    InstallPath = "G:\\testmc"
-});
-
-stopwatch.Stop();
-Console.WriteLine($"\n下载完成！总耗时: {stopwatch.Elapsed:mm\\:ss}");
-
+    
+}
