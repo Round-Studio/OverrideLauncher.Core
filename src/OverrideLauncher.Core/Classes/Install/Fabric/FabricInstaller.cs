@@ -1,6 +1,8 @@
-﻿namespace OverrideLauncher.Core.Classes.Install.Fabric;
+﻿using OverrideLauncher.Core.Interface.Download;
 
-public class FabricInstaller
+namespace OverrideLauncher.Core.Classes.Install.Fabric;
+
+public class FabricInstaller : Download
 {
     
 }
