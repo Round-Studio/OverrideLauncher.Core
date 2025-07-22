@@ -10,4 +10,8 @@
       <PackageReference Include="Downloader" Version="4.0.1-beta" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Classes\Install\DownloadPerformanceMonitor.cs" />
+    </ItemGroup>
+
 </Project>
