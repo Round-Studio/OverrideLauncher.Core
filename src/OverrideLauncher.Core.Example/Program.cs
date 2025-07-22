@@ -16,6 +16,11 @@ DictionaryDownloadHost.SwitchMirror("official"); // 官方: official
                                                  // BMCL API: bmclapi
 Console.WriteLine($"使用镜像源: {DictionaryDownloadHost.GetCurrentMirror().Name}");
 
+// 自定义下载版本
+
+Console.Write("请输入要下载的版本号：");
+installname = Console.ReadLine();
+
 Console.WriteLine("=== 请选择下载内容 ===");
 Console.WriteLine("1. 安装原版游戏");
 Console.WriteLine("2. 安装 Fabric");
