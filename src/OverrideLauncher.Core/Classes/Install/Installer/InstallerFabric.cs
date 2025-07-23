@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using OverrideLauncher.Core.Base.Dictionary;
+using OverrideLauncher.Core.Base.Entry.Download;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
@@ -13,6 +14,8 @@ namespace OverrideLauncher.Core.Classes.Install.Installer;
 
 public class InstallerFabric : IDownload
 {
+    public FabricApiEntry.FabricApiVersion FabricApiVersion { get; set; } = null;
+    
     private ManifestClientJson? ManifestClientJson { get; set; }
     private FabricLoaderVersion _fabricProfile;
     private ClientRootInfo ClientRootInfo { get; set; }
@@ -69,6 +72,26 @@ public class InstallerFabric : IDownload
         });
 
         ManifestClientJson.Libraries.AddRange(lst);
+
+        if (FabricApiVersion != null)
+        {
+            FabricApiVersion.Files.ForEach(x =>
+            {
+                downloadList.Files.Add(new DownloadListEntry.DownloadFileItem()
+                {
+                    Type = FileType.JarFile,
+                    FileInfo = new DownloadFileInfo()
+                    {
+                        Url = x.Url,
+                        FileName = Path.Combine(rootInfo.InstallPath,
+                            DictionaryGameRoot.VersionsPath,
+                            rootInfo.InstallName, DictionaryGameRoot.ModsPath, x.Filename),
+                        Hash = x.Hashes["sha1"],
+                        Size = (ulong)x.Size
+                    }
+                });
+            });
+        }
 
         if (_fabricProfile.LauncherMeta.MainClass is string mastr)
         {

@@ -7,4 +7,5 @@ public class DictionaryGameRoot
     public static string AssetsIndexPath = "assets/indexes";
     public static string AssetsObjectPath = "assets/objects";
     public static string VersionsPath = "versions";
+    public static string ModsPath = "mods";
 }

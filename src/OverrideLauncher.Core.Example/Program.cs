@@ -84,7 +84,8 @@ if (choose.Key == ConsoleKey.D3)
     InstallerCollection install = new InstallerCollection(new InstallerCollectionEntry()
     {
         VanillaManifest = await InstallHelper.TryingFindVersion(installname),
-        FabricVersion = fabricman.First()
+        FabricVersion = fabricman.First(),
+        FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()
     });
 
     var lastProgress = 0.0;

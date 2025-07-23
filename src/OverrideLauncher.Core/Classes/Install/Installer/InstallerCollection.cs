@@ -32,6 +32,11 @@ public class InstallerCollection
             {
                 DownloadStatusChanged?.Invoke(this, entry);
             };
+
+            if (installerCE.FabricApiVersion != null)
+            {
+                FabricInstaller.FabricApiVersion = installerCE.FabricApiVersion;
+            }
         }
     }
     

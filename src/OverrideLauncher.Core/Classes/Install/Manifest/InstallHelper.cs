@@ -8,6 +8,7 @@ namespace OverrideLauncher.Core.Classes.Install.Manifest;
 
 public class InstallHelper
 {
+    private static List<FabricApiEntry.FabricApiVersion> fabricApiVersions;
     public static async Task<ManifestMojang.ManifestVersion> TryingFindVersion(string id)
     {
         var versionManifest = await GetVersionManifest();
@@ -148,6 +149,8 @@ public class InstallHelper
     }
     public static async Task<List<FabricApiEntry.FabricApiVersion>> GetFabricApiVersionsManifest()
     {
+        if (fabricApiVersions != null) return fabricApiVersions;
+        
         HttpClient client = new HttpClient();
         string projectId = "P7dR8mSH";
         string apiUrl = $"https://api.modrinth.com/v2/project/{projectId}/version";
@@ -161,8 +164,8 @@ public class InstallHelper
         var responseBody = await response.Content.ReadAsStringAsync();
             
         // 反序列化JSON到Version对象列表
-        List<FabricApiEntry.FabricApiVersion> versions = JsonSerializer.Deserialize<List<FabricApiEntry.FabricApiVersion>>(responseBody);
-        return versions;
+        fabricApiVersions = JsonSerializer.Deserialize<List<FabricApiEntry.FabricApiVersion>>(responseBody);
+        return fabricApiVersions;
     }
     public static async Task<List<FabricApiEntry.FabricApiVersion>> TryGetFabricApiVersions(string id)
     {
@@ -174,7 +177,6 @@ public class InstallHelper
         });
         return res;
     }
-
     public static string ConvertToMavenPath(string mavenCoordinate, string extension = "jar")
     {
         // 使用 Span 和范围语法处理分割
