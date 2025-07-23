@@ -17,4 +17,4 @@
 ## 如何使用
 
 我们很感谢您使用我们的启动核心，当然，你需要注意我们的开源协议为 GPL-3.0 license  
-您可以查看我们的文档 [OverrideLauncher.Core 文档](https://docs.roundstudio.top/docs/%E6%96%87%E6%A1%A3/OverrideLauncher.Core%20%E5%90%AF%E5%8A%A8%E6%A0%B8%E5%BF%83/%E4%BB%8B%E7%BB%8D)
+您可以查看我们的文档 [OverrideLauncher.Core 文档](https://docs.roundstudio.top/docs/%E6%96%87%E6%A1%A3/OverrideLauncher.Core/%E4%BB%8B%E7%BB%8D)
