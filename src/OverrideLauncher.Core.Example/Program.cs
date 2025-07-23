@@ -7,13 +7,14 @@ using OverrideLauncher.Core.Base.Entry.Download.Install;
 using OverrideLauncher.Core.Classes.Install.Installer;
 
 var installname = "1.20.1";
+var installroot = "G:\\testmc";
 
 Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
 Console.WriteLine($"固定并发数: 512");
 
 // 自动使用 官方 镜像源
-DictionaryDownloadHost.SwitchMirror("official"); // 官方: official
-                                                 // BMCL API: bmclapi
+DictionaryDownloadHost.SwitchMirror("bmclapi"); // 官方: official
+                                                // BMCL API: bmclapi
 Console.WriteLine($"使用镜像源: {DictionaryDownloadHost.GetCurrentMirror().Name}");
 
 // 自定义下载版本
@@ -57,7 +58,7 @@ if (choose.Key == ConsoleKey.D1)
     await install.Install(new ClientRootInfo()
     {
         InstallName = installname,
-        InstallPath = "G:\\testmc"
+        InstallPath = installroot
     });
 
     stopwatch.Stop();
@@ -70,7 +71,7 @@ if (choose.Key == ConsoleKey.D2)
     fabi.Install(new ClientRootInfo()
     {
         InstallName = installname,
-        InstallPath = "D:\\testmc"
+        InstallPath = installroot
     }).Wait();
 }
 
@@ -109,7 +110,7 @@ if (choose.Key == ConsoleKey.D3)
     install.Install(new ClientRootInfo()
     {
         InstallName = installname,
-        InstallPath = "D:\\testmc"
+        InstallPath = installroot
     });
 
     stopwatch.Stop();
