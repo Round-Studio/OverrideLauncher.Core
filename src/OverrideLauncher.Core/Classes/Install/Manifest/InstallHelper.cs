@@ -1,7 +1,10 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
+using System.Xml.Serialization;
 using OverrideLauncher.Core.Base.Dictionary;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
+using OverrideLauncher.Core.Base.Entry.Download.Install.Forge;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 namespace OverrideLauncher.Core.Classes.Install.Manifest;
@@ -9,6 +12,7 @@ namespace OverrideLauncher.Core.Classes.Install.Manifest;
 public class InstallHelper
 {
     private static List<FabricApiEntry.FabricApiVersion> fabricApiVersions;
+    private static ForgeMetaDataEntry.ForgeMetaDataRoot forgeMetaDataRoot;
     public static async Task<ManifestMojang.ManifestVersion> TryingFindVersion(string id)
     {
         var versionManifest = await GetVersionManifest();
@@ -192,5 +196,32 @@ public class InstallHelper
         string groupPath = groupId.Replace('.', '/');
         string fileName = $"{artifactId}-{version}.{extension}";
         return $"{groupPath}/{artifactId}/{version}/{fileName}";
+    }
+    public static async Task<ForgeMetaDataEntry.ForgeMetaDataRoot> TryGetForgeManifest()
+    {
+        if (forgeMetaDataRoot != null) return forgeMetaDataRoot;
+    
+        using (var httpClient = new HttpClient())
+        {
+            string xmlContent = await httpClient.GetStringAsync(DictionaryDownloadHost.Sources.ForgeManufestHost);
+        
+            var serializer = new XmlSerializer(typeof(ForgeMetaDataEntry.ForgeMetaDataRoot));
+            using (var reader = new StringReader(xmlContent))
+            {
+                forgeMetaDataRoot = (ForgeMetaDataEntry.ForgeMetaDataRoot)serializer.Deserialize(reader);
+                return forgeMetaDataRoot;
+            }
+        }
+    }
+    public static async Task<List<string>> TryGetInstallForgeMeta(string id)
+    {
+        var ent = await TryGetForgeManifest();
+        var res = new List<string>();
+        ent.Versioning.Versions.Version.ForEach(x =>
+        {
+            if (x.Split('-')[0] == id) res.Add(x);
+        });
+
+        return res;
     }
 }

@@ -17,7 +17,10 @@ public class DictionaryDownloadHost
             
             FabricHost = "https://meta.fabricmc.net/v2",
             FabricResourceHost = "https://maven.fabricmc.net",
-            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version"
+            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version",
+            
+            ForgeManufestHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml",
+            ForgeResourceHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/{FORGE_VERSION_ID}/forge-{FORGE_VERSION_ID}-installer.jar"
         },
         ["bmclapi"] = new MirrorConfig
         {
@@ -28,7 +31,10 @@ public class DictionaryDownloadHost
             
             FabricHost = "https://bmclapi2.bangbang93.com/fabric-meta/v2",
             FabricResourceHost = "https://bmclapi2.bangbang93.com/maven",
-            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version"
+            FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version",
+            
+            ForgeManufestHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml",
+            ForgeResourceHost = "https://bmclapi2.bangbang93.com/forge/download?mcversion={CLIENT_VERSION}&version={FORGE_VERSION}&category=installer&format=jar"
         }
     };
 
@@ -67,4 +73,7 @@ public class MirrorConfig
     public string FabricHost { get; set; }
     public string FabricResourceHost { get; set; }
     public string FabricAPIModURL { get; set; }
+    
+    public string ForgeManufestHost { get; set; }
+    public string ForgeResourceHost { get; set; }
 }

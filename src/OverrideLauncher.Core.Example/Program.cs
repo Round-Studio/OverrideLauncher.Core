@@ -13,7 +13,7 @@ Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
 Console.WriteLine($"固定并发数: 512");
 
 // 自动使用 官方 镜像源
-DictionaryDownloadHost.SwitchMirror("bmclapi"); // 官方: official
+DictionaryDownloadHost.SwitchMirror("official"); // 官方: official
                                                 // BMCL API: bmclapi
 Console.WriteLine($"使用镜像源: {DictionaryDownloadHost.GetCurrentMirror().Name}");
 
@@ -26,6 +26,7 @@ Console.WriteLine("=== 请选择下载内容 ===");
 Console.WriteLine("1. 安装原版游戏");
 Console.WriteLine("2. 安装 Fabric");
 Console.WriteLine("3. 复合安装器安装原版游戏");
+Console.WriteLine("4. 安装 Forge");
 
 Console.Write("\n你选择：");
 
@@ -115,4 +116,9 @@ if (choose.Key == ConsoleKey.D3)
 
     stopwatch.Stop();
     Console.WriteLine($"\n下载完成！总耗时: {stopwatch.Elapsed:mm\\:ss}");
+}
+
+if (choose.Key == ConsoleKey.D4)
+{
+    var fori = new InstallerForge(InstallHelper.TryGetInstallForgeMeta(installname).Result.First());
 }
