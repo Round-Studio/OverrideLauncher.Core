@@ -337,18 +337,4 @@ public class InstallerFabric : IDownload
             semaphore.Release();
         }
     }
-
-    /// <summary>
-    /// 根据文件类型获取下载状态
-    /// </summary>
-    private DownloadStatusType GetStatusForFileType(FileType fileType)
-    {
-        return fileType switch
-        {
-            FileType.BaseGame => DownloadStatusType.DownloadClient,
-            FileType.JarFile => DownloadStatusType.DownloadLibrary,
-            FileType.AssetFile => DownloadStatusType.DownloadAssets,
-            _ => DownloadStatusType.DownloadJson
-        };
-    }
 }

@@ -1,6 +1,8 @@
 ﻿using Downloader;
 using OverrideLauncher.Core.Base.Entry.Download;
 using OverrideLauncher.Core.Base.Entry.Download.Install;
+using OverrideLauncher.Core.Base.Enum;
+using OverrideLauncher.Core.Base.Enum.Download;
 
 namespace OverrideLauncher.Core.Interface.Download;
 
@@ -19,6 +21,20 @@ public class IDownload
 
     public ulong FileCount { get; set; } = 0;
     public EventHandler<DownloadStatusChangedEntry> DownloadStatusChanged;
+    
+    /// <summary>
+    /// 根据文件类型获取下载状态
+    /// </summary>
+    public DownloadStatusType GetStatusForFileType(FileType fileType)
+    {
+        return fileType switch
+        {
+            FileType.BaseGame => DownloadStatusType.DownloadClient,
+            FileType.JarFile => DownloadStatusType.DownloadLibrary,
+            FileType.AssetFile => DownloadStatusType.DownloadAssets,
+            _ => DownloadStatusType.DownloadJson
+        };
+    }
 
     public async Task DownloadFileAsync(DownloadFileInfo info, IProgress<double>? progress = null)
     {

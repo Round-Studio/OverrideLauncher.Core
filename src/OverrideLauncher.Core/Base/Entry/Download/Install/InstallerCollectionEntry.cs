@@ -8,4 +8,5 @@ public class InstallerCollectionEntry
     public ManifestMojang.ManifestVersion VanillaManifest { get; set; } = null;
     public FabricLoaderVersion FabricVersion { get; set; } = null;
     public FabricApiEntry.FabricApiVersion FabricApiVersion { get; set; } = null;
+    public string ForgeVersion { get; set; } = String.Empty;
 }

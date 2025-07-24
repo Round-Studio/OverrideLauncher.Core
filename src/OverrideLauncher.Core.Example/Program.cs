@@ -81,13 +81,14 @@ if (choose.Key == ConsoleKey.D3)
     Console.WriteLine($"\n开始下载 Minecraft {installname}...");
     var stopwatch = Stopwatch.StartNew();
 
-    var fabricman = await InstallHelper.GetVersionFabricManifest(installname);
+    // var fabricman = await InstallHelper.GetVersionFabricManifest(installname);
 
     InstallerCollection install = new InstallerCollection(new InstallerCollectionEntry()
     {
         VanillaManifest = await InstallHelper.TryingFindVersion(installname),
-        FabricVersion = fabricman.First(),
-        FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()
+        /*FabricVersion = fabricman.First(),
+        FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()*/
+        ForgeVersion = InstallHelper.TryGetInstallForgeMeta(installname).Result.First()
     });
 
     var lastProgress = 0.0;
@@ -121,4 +122,15 @@ if (choose.Key == ConsoleKey.D3)
 if (choose.Key == ConsoleKey.D4)
 {
     var fori = new InstallerForge(InstallHelper.TryGetInstallForgeMeta(installname).Result.First());
+    fori.DownloadStatusChanged += (sender, entry) =>
+    {
+        Console.Write(
+            $"\r[{entry.FileType}] {entry.Status} - 进度: {entry.Progress:F}% ({entry.CompletedFiles}/{entry.TotalFiles}) - 当前文件: {entry.CurrentFileName}" +
+            $"                      ");
+    };
+    await fori.Install(new ClientRootInfo()
+    {
+        InstallName = installname,
+        InstallPath = installroot
+    });
 }
