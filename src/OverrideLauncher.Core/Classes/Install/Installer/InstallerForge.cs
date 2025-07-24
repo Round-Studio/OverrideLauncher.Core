@@ -150,6 +150,12 @@ public class InstallerForge : IDownload
 
         var valjson = InstallHelper.GetClientJsonEntry(_rootInfo);
         var forgjson = ForgeVersionInfo.FromJson(forgejsonfile);
+        
+        valjson.ModLoader.Add(new ModLoaderInfo()
+        {
+            Name = "forge",
+            Version = _installVersion
+        });
 
         forgjson.Arguments.Game.ForEach(x => valjson.Arguments.Game.Add(x));
         forgjson.Arguments.Jvm.ForEach(x => valjson.Arguments.Jvm.Add(x));
