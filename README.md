@@ -7,6 +7,7 @@
 
 ![GitHub Star](https://img.shields.io/github/stars/Round-Studio/OverrideLauncher.Core?logo=github&label=Star&style=for-the-badge)
 ![License](https://img.shields.io/badge/GPL%203.0%20License%20-%20?logo=github&label=%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE&style=for-the-badge&color=ff7a35)
+[![Nuget](https://img.shields.io/badge/To%20Nuget-fff?logo=nuget&label=Nuget&style=for-the-badge&color=fff)](https://www.nuget.org/packages/OverrideLauncher.Core/)
 
 ![GitHub Forks](https://img.shields.io/github/forks/Round-Studio/OverrideLauncher.Core)
 ![GitHub Watchers](https://img.shields.io/github/watchers/Round-Studio/OverrideLauncher.Core)  
