@@ -5,7 +5,7 @@ namespace OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 public class ManifestClientJson
 {
-    [JsonPropertyName("modLoader")] public List<ModLoaderInfo> ModLoader { get; set; } = new ();
+    [JsonPropertyName("modLoader")] public List<ModLoaderInfo> ModLoader { get; set; } = new();
     [JsonPropertyName("minecraftArguments")] public string MinecraftArguments { get; set; }
 
     [JsonPropertyName("arguments")] public ArgumentsEntry Arguments { get; set; }
@@ -38,9 +38,13 @@ public class ManifestClientJson
 
     public class ArgumentsEntry
     {
-        [JsonPropertyName("game")] public List<object> Game { get; set; } // Can be string or RuleObject
-
-        [JsonPropertyName("jvm")] public List<object> Jvm { get; set; } // Can be string or RuleObject
+        [JsonPropertyName("game")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<object> Game { get; set; } // Can be string or RuleObject
+        
+        [JsonPropertyName("jvm")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+        public List<object> Jvm { get; set; } // Can be string or RuleObject
     }
 
     public class RuleObject
@@ -95,11 +99,17 @@ public class ManifestClientJson
 
         [JsonPropertyName("sha1")] public string Sha1 { get; set; }
 
-        [JsonPropertyName("size")] public int Size { get; set; }
+        [JsonPropertyName("size")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Size { get; set; }
 
-        [JsonPropertyName("totalSize")] public int TotalSize { get; set; }
+        [JsonPropertyName("totalSize")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int TotalSize { get; set; }
 
-        [JsonPropertyName("url")] public string Url { get; set; }
+        [JsonPropertyName("url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
     }
 
     public class DownloadsEntry
@@ -113,9 +123,13 @@ public class ManifestClientJson
     {
         [JsonPropertyName("sha1")] public string Sha1 { get; set; }
 
-        [JsonPropertyName("size")] public int Size { get; set; }
+        [JsonPropertyName("size")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Size { get; set; }
 
-        [JsonPropertyName("url")] public string Url { get; set; }
+        [JsonPropertyName("url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
     }
 
     public class JavaVersionEntry
@@ -127,13 +141,19 @@ public class ManifestClientJson
 
     public class Library
     {
-        [JsonPropertyName("downloads")] public LibraryDownloads Downloads { get; set; }
+        [JsonPropertyName("downloads")] 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public LibraryDownloads Downloads { get; set; }
 
         [JsonPropertyName("name")] public string Name { get; set; }
 
-        [JsonPropertyName("url")] public string Url { get; set; }
+        [JsonPropertyName("url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
 
-        [JsonPropertyName("size")] public ulong Size { get; set; }
+        [JsonPropertyName("size")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ulong Size { get; set; }
 
         [JsonPropertyName("natives")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -165,9 +185,13 @@ public class ManifestClientJson
 
         [JsonPropertyName("sha1")] public string Sha1 { get; set; }
 
-        [JsonPropertyName("size")] public int Size { get; set; }
+        [JsonPropertyName("size")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Size { get; set; }
 
-        [JsonPropertyName("url")] public string Url { get; set; }
+        [JsonPropertyName("url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
     }
 
     public class Extract
@@ -195,8 +219,12 @@ public class ManifestClientJson
 
         [JsonPropertyName("sha1")] public string Sha1 { get; set; }
 
-        [JsonPropertyName("size")] public int Size { get; set; }
+        [JsonPropertyName("size")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Size { get; set; }
 
-        [JsonPropertyName("url")] public string Url { get; set; }
+        [JsonPropertyName("url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
     }
 }

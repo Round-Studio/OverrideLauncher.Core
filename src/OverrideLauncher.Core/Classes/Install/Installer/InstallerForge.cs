@@ -20,10 +20,10 @@ namespace OverrideLauncher.Core.Classes.Install.Installer;
 public class InstallerForge : IDownload
 {
     private DownloadListEntry downloadList { get; set; } = new();
+    private ClientRootInfo _rootInfo { get; set; }
     private string _installVersion;
     private string _temppath { get; set; }
     private string _installfileurl { get; set; }
-    private ClientRootInfo _rootInfo { get; set; }
     private string _installerJarPath { get; set; }
 
     // 按文件类型分别统计

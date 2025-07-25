@@ -20,7 +20,9 @@ public class DictionaryDownloadHost
             FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version",
             
             ForgeManufestHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml",
-            ForgeResourceHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/{FORGE_VERSION_ID}/forge-{FORGE_VERSION_ID}-installer.jar"
+            ForgeResourceHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/{FORGE_VERSION_ID}/forge-{FORGE_VERSION_ID}-installer.jar",
+            
+            LiteLoaderManufestHost = "https://dl.liteloader.com/versions/versions.json"
         },
         ["bmclapi"] = new MirrorConfig
         {
@@ -34,7 +36,9 @@ public class DictionaryDownloadHost
             FabricAPIModURL = "https://api.modrinth.com/v2/project/P7dR8mSH/version",
             
             ForgeManufestHost = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml",
-            ForgeResourceHost = "https://bmclapi2.bangbang93.com/forge/download?mcversion={CLIENT_VERSION}&version={FORGE_VERSION}&category=installer&format=jar"
+            ForgeResourceHost = "https://bmclapi2.bangbang93.com/forge/download?mcversion={CLIENT_VERSION}&version={FORGE_VERSION}&category=installer&format=jar",
+            
+            LiteLoaderManufestHost = "https://bmclapi.bangbang93.com/maven/com/mumfrey/liteloader/versions.json"
         }
     };
 
@@ -76,4 +80,6 @@ public class MirrorConfig
     
     public string ForgeManufestHost { get; set; }
     public string ForgeResourceHost { get; set; }
+    
+    public string LiteLoaderManufestHost { get; set; }
 }

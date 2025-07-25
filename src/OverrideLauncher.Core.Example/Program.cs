@@ -27,6 +27,7 @@ Console.WriteLine("1. 安装原版游戏");
 Console.WriteLine("2. 安装 Fabric");
 Console.WriteLine("3. 复合安装器安装原版游戏");
 Console.WriteLine("4. 安装 Forge");
+Console.WriteLine("5. 安装 LiteLoader");
 
 Console.Write("\n你选择：");
 
@@ -122,6 +123,22 @@ if (choose.Key == ConsoleKey.D3)
 if (choose.Key == ConsoleKey.D4)
 {
     var fori = new InstallerForge(InstallHelper.TryGetInstallForgeMeta(installname).Result.First());
+    fori.DownloadStatusChanged += (sender, entry) =>
+    {
+        Console.Write(
+            $"\r[{entry.FileType}] {entry.Status} - 进度: {entry.Progress:F}% ({entry.CompletedFiles}/{entry.TotalFiles}) - 当前文件: {entry.CurrentFileName}" +
+            $"                      ");
+    };
+    await fori.Install(new ClientRootInfo()
+    {
+        InstallName = installname,
+        InstallPath = installroot
+    });
+}
+
+if (choose.Key == ConsoleKey.D5)
+{
+    var fori = new InstallerLiteLoader(InstallHelper.TryGetVersionLiteLoaderVersions(installname).Result.First());
     fori.DownloadStatusChanged += (sender, entry) =>
     {
         Console.Write(

@@ -5,6 +5,7 @@ using OverrideLauncher.Core.Base.Dictionary;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Forge;
+using OverrideLauncher.Core.Base.Entry.Download.Install.LiteLoader;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 namespace OverrideLauncher.Core.Classes.Install.Manifest;
@@ -222,6 +223,50 @@ public class InstallHelper
             if (x.Split('-')[0] == id) res.Add(x);
         });
 
+        return res;
+    }
+    public static async Task<LiteLoaderManifest> TryGetLiteLoaderManifest()
+    {
+        async Task<string> GetJsonContentAsync(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        string url = DictionaryDownloadHost.Sources.LiteLoaderManufestHost;
+        try
+        {
+            // 获取JSON内容
+            string jsonContent = await GetJsonContentAsync(url);
+
+            // 反序列化为ManifestClientAssetsJson对象
+            LiteLoaderManifest liteLoaderManifest = JsonSerializer.Deserialize<LiteLoaderManifest>(jsonContent);
+            return liteLoaderManifest;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+    public static async Task<List<LiteLoaderManifest.VersionData>> TryGetVersionLiteLoaderVersions(string id)
+    {
+        var lst = await TryGetLiteLoaderManifest();
+        var res = new List<LiteLoaderManifest.VersionData>();
+
+        foreach (var keyValuePair in lst.Versions)
+        {
+            if (keyValuePair.Key == id)
+            {
+                res.Add(keyValuePair.Value);
+            }
+        }
+
+        if (res.Count == 0) return null;
+        
         return res;
     }
 }

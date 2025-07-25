@@ -1,4 +1,5 @@
 ﻿using OverrideLauncher.Core.Base.Entry.Download.Install.Fabric;
+using OverrideLauncher.Core.Base.Entry.Download.Install.LiteLoader;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 
 namespace OverrideLauncher.Core.Base.Entry.Download.Install;
@@ -9,4 +10,5 @@ public class InstallerCollectionEntry
     public FabricLoaderVersion FabricVersion { get; set; } = null;
     public FabricApiEntry.FabricApiVersion FabricApiVersion { get; set; } = null;
     public string ForgeVersion { get; set; } = String.Empty;
+    public LiteLoaderManifest.VersionData LiteLoaderVersion { get; set; } = null;
 }

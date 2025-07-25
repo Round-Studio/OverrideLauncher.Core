@@ -12,6 +12,7 @@ public class InstallerCollection
     public InstallerVanilla VanillaInstaller { get; private set; }
     public InstallerFabric FabricInstaller { get; private set; }
     public InstallerForge ForgeInstaller { get; private set; }
+    public InstallerLiteLoader LiteLoaderInstaller { get; private set; }
     
     public InstallerCollection(InstallerCollectionEntry installerCE)
     {
@@ -48,6 +49,15 @@ public class InstallerCollection
                 DownloadStatusChanged?.Invoke(this, entry);
             };
         }
+
+        if (installerCE.LiteLoaderVersion != null)
+        {
+            LiteLoaderInstaller = new InstallerLiteLoader(installerCE.LiteLoaderVersion);
+            LiteLoaderInstaller.DownloadStatusChanged += (sender, entry) =>
+            {
+                DownloadStatusChanged?.Invoke(this, entry);
+            };
+        }
     }
     
     public void Install(ClientRootInfo rootInfo)
@@ -56,6 +66,7 @@ public class InstallerCollection
         var ien = new List<Task>();
         if (FabricInstaller != null) ien.Add(FabricInstaller.Install(rootInfo));
         if (ForgeInstaller != null) ien.Add(ForgeInstaller.Install(rootInfo));
+        if (LiteLoaderInstaller != null) ien.Add(LiteLoaderInstaller.Install(rootInfo));
 
         Task.WaitAll(ien.ToArray());
     }
