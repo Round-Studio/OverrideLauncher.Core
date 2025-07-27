@@ -25,7 +25,7 @@ installname = Console.ReadLine();
 Console.WriteLine("=== 请选择下载内容 ===");
 Console.WriteLine("1. 安装原版游戏");
 Console.WriteLine("2. 安装 Fabric");
-Console.WriteLine("3. 复合安装器安装原版游戏");
+Console.WriteLine("3. 复合安装器安装游戏");
 Console.WriteLine("4. 安装 Forge");
 Console.WriteLine("5. 安装 LiteLoader");
 
@@ -89,7 +89,7 @@ if (choose.Key == ConsoleKey.D3)
         VanillaManifest = await InstallHelper.TryingFindVersion(installname),
         /*FabricVersion = fabricman.First(),
         FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()*/
-        ForgeVersion = InstallHelper.TryGetInstallForgeMeta(installname).Result.First()
+        LiteLoaderVersion = InstallHelper.TryGetVersionLiteLoaderVersions(installname).Result.First()
     });
 
     var lastProgress = 0.0;
