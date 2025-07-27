@@ -17,8 +17,8 @@ namespace OverrideLauncher.Core.Interface.Download
     {
         #region Configuration
         // Configurable settings with default values
-        public int MaxParallelDownloads { get; set; } = 1024;
-        public int SmallFileThreshold { get; set; } = 1 * 1024 * 1024; // 1MB
+        public int MaxParallelDownloads { get; set; } = 512;
+        public int SmallFileThreshold { get; set; } = 2 * 1024 * 1024; // 1MB
         public int MaxChunksPerFile { get; set; } = 8;
         public int RetryAttempts { get; set; } = 3;
         public TimeSpan RetryDelay { get; set; } = TimeSpan.FromMilliseconds(500);
@@ -198,11 +198,8 @@ namespace OverrideLauncher.Core.Interface.Download
         {
             var downloadOpt = new DownloadConfiguration()
             {
-                ChunkCount = 8,
-                ParallelDownload = true,
+                ChunkCount = MaxChunksPerFile,
                 Timeout = (int)Timeout.TotalMilliseconds,
-                BufferBlockSize = 65536,
-                MaximumBytesPerSecond = 0,
                 RequestConfiguration = new RequestConfiguration()
                 {
                     UserAgent = "OverrideLauncher/2.0 (Advanced-Algorithm)",

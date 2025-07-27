@@ -7,10 +7,9 @@ using OverrideLauncher.Core.Base.Entry.Download.Install;
 using OverrideLauncher.Core.Classes.Install.Installer;
 
 var installname = "1.20.1";
-var installroot = "G:\\testmc";
+var installroot = "D:\\testmc";
 
 Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
-Console.WriteLine($"固定并发数: 512");
 
 // 自动使用 官方 镜像源
 DictionaryDownloadHost.SwitchMirror("official"); // 官方: official
