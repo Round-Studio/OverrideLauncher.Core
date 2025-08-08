@@ -169,5 +169,5 @@ if (choose.Key == ConsoleKey.D6)
     Console.WriteLine($"游戏版本: {config.ClientVersion}");
     Console.WriteLine($"系统: {config.System}");
     Console.WriteLine($"加载器: {string.Join(", ", config.ModLoaders)}");
-    Console.WriteLine($"文件情况: {config.FilesFullRange}");
+    Console.WriteLine($"文件是否完整: {config.FilesFullRange}");
 }

@@ -5,6 +5,7 @@ using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Manifest;
 using OverrideLauncher.Core.Base.Entry.Info;
 using OverrideLauncher.Core.Classes.Install.Manifest;
+using OverrideLauncher.Core.Classes.Utilities;
 
 namespace OverrideLauncher.Core.Classes.Reader;
 
@@ -35,9 +36,26 @@ public class ReadClient : ClientInfo
             File.ReadAllText(Path.Combine(ClientRootPath, DictionaryGameRoot.AssetsIndexPath,
                 $"{ManifestClientJson.AssetIndex.Id}.json"))) ?? throw new InvalidOperationException();
 
+        if (!File.Exists(Path.Combine(ClientRootPath, DictionaryGameRoot.VersionsPath, ClientName,
+                $"{ClientName}.jar")))
+            throw new FileNotFoundException("未找到游戏本体文件");
+
         System = GetSystem();
         ModLoaders = GetModLoadeer();
         FilesFullRange = IsFullFiles();
+
+        try
+        {
+            var clientBodyJson = JsonSerializer.Deserialize<ClientBodyJson>(
+                ZipUtil.ReadFileContentFromZip(
+                    Path.Combine(ClientRootPath, DictionaryGameRoot.VersionsPath, ClientName,
+                        $"{ClientName}.jar"), "version.json"));
+            ClientVersion = clientBodyJson.Id;
+        }
+        catch
+        {
+            ClientVersion = null;
+        }
     }
 
     private string GetSystem()
@@ -98,16 +116,27 @@ public class ReadClient : ClientInfo
 
                 if (file?.Downloads?.Classifiers != null)
                 {
-                    var classFi = file?.Downloads?.Classifiers["natives-" + System];
-                    if (classFi != null)
+                    try
                     {
-                        path = Path.Combine(ClientRootPath, DictionaryGameRoot.LibrariesPath,
-                            classFi.Path);
-                    }
+                        var classFi = file?.Downloads?.Classifiers["natives-" + System];
+                        if (classFi != null)
+                        {
+                            path = Path.Combine(ClientRootPath, DictionaryGameRoot.LibrariesPath,
+                                classFi.Path);
+                        }
+                    }catch{ }
                 }
             }
 
             if(!string.IsNullOrEmpty(path)) if (!File.Exists(path)) return false;
+        }
+        
+        foreach (var fileInfo in ManifestClientAssetsJson.Objects)
+        {
+            var file = Path.Combine(ClientRootPath, DictionaryGameRoot.AssetsObjectPath,
+                fileInfo.Value.Hash.Substring(0, 2), fileInfo.Value.Hash);
+
+            if (!File.Exists(file)) return false;
         }
         
         return true;
