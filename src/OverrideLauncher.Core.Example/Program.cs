@@ -4,7 +4,9 @@ using OverrideLauncher.Core.Classes.Install.Manifest;
 using OverrideLauncher.Core.Base.Dictionary;
 using System.Diagnostics;
 using OverrideLauncher.Core.Base.Entry.Download.Install;
+using OverrideLauncher.Core.Base.Entry.Info;
 using OverrideLauncher.Core.Classes.Install.Installer;
+using OverrideLauncher.Core.Classes.Reader;
 
 var installname = "1.20.1";
 var installroot = "D:\\testmc";
@@ -27,10 +29,13 @@ Console.WriteLine("2. 安装 Fabric");
 Console.WriteLine("3. 复合安装器安装游戏");
 Console.WriteLine("4. 安装 Forge");
 Console.WriteLine("5. 安装 LiteLoader");
+Console.WriteLine("6. 读取游戏信息");
 
 Console.Write("\n你选择：");
 
 var choose = Console.ReadKey();
+
+Console.WriteLine("");
 
 if (choose.Key == ConsoleKey.D1)
 {
@@ -58,8 +63,8 @@ if (choose.Key == ConsoleKey.D1)
 
     await install.Install(new ClientRootInfo()
     {
-        InstallName = installname,
-        InstallPath = installroot
+        ClientName = installname,
+        ClientRootPath = installroot
     });
 
     stopwatch.Stop();
@@ -71,8 +76,8 @@ if (choose.Key == ConsoleKey.D2)
     var fabi = new InstallerFabric(InstallHelper.GetVersionFabricManifest(installname).Result.First());
     fabi.Install(new ClientRootInfo()
     {
-        InstallName = installname,
-        InstallPath = installroot
+        ClientName = installname,
+        ClientRootPath = installroot
     }).Wait();
 }
 
@@ -111,8 +116,8 @@ if (choose.Key == ConsoleKey.D3)
 
     install.Install(new ClientRootInfo()
     {
-        InstallName = installname,
-        InstallPath = installroot
+        ClientName = installname,
+        ClientRootPath = installroot
     });
 
     stopwatch.Stop();
@@ -130,8 +135,8 @@ if (choose.Key == ConsoleKey.D4)
     };
     await fori.Install(new ClientRootInfo()
     {
-        InstallName = installname,
-        InstallPath = installroot
+        ClientName = installname,
+        ClientRootPath = installroot
     });
 }
 
@@ -146,7 +151,23 @@ if (choose.Key == ConsoleKey.D5)
     };
     await fori.Install(new ClientRootInfo()
     {
-        InstallName = installname,
-        InstallPath = installroot
+        ClientName = installname,
+        ClientRootPath = installroot
     });
+}
+
+if (choose.Key == ConsoleKey.D6)
+{
+    var config = new ReadClient(new ClientRootInfo()
+    {
+        ClientName = installname,
+        ClientRootPath = installroot
+    });
+    
+    Console.WriteLine($"游戏版本: {config.ClientName}");
+    Console.WriteLine($"游戏根目录: {config.ClientRootPath}");
+    Console.WriteLine($"游戏版本: {config.ClientVersion}");
+    Console.WriteLine($"系统: {config.System}");
+    Console.WriteLine($"加载器: {string.Join(", ", config.ModLoaders)}");
+    Console.WriteLine($"文件情况: {config.FilesFullRange}");
 }

@@ -14,6 +14,38 @@ public class InstallHelper
 {
     private static List<FabricApiEntry.FabricApiVersion> fabricApiVersions;
     private static ForgeMetaDataEntry.ForgeMetaDataRoot forgeMetaDataRoot;
+
+    public static bool IsThisSystemFile(string path)
+    {
+        var isthisSystem = true;
+        GetOtherSystem().ForEach(x => { isthisSystem = !path.Contains(x); });
+        
+        return isthisSystem;
+    }
+    public static  List<string> GetOtherSystem()
+    {
+        var res = new List<string>();
+        
+        if (OperatingSystem.IsWindows())
+        {
+            res.Add("linux");
+            res.Add("osx");
+            res.Add("macos");
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            res.Add("windows");
+            res.Add("osx");
+            res.Add("macos");
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            res.Add("windows");
+            res.Add("linux");
+        }
+
+        return res;
+    }
     public static async Task<ManifestMojang.ManifestVersion> TryingFindVersion(string id)
     {
         var versionManifest = await GetVersionManifest();
@@ -81,10 +113,10 @@ public class InstallHelper
     {
         if (rootInfo == null) throw new NullReferenceException();
         
-        var path = Path.Combine(rootInfo.InstallPath,
-            DictionaryGameRoot.VersionsPath, rootInfo.InstallName, $"{rootInfo.InstallName}.json");
+        var path = Path.Combine(rootInfo.ClientRootPath,
+            DictionaryGameRoot.VersionsPath, rootInfo.ClientName, $"{rootInfo.ClientName}.json");
         
-        if (!File.Exists(path)) throw new FileNotFoundException($"未找到 {rootInfo.InstallName}.json");
+        if (!File.Exists(path)) throw new FileNotFoundException($"未找到 {rootInfo.ClientName}.json");
         if (string.IsNullOrEmpty(File.ReadAllText(path))) throw new NullReferenceException();
         
         return JsonSerializer.Deserialize<ManifestClientJson>(File.ReadAllText(path));
@@ -147,8 +179,8 @@ public class InstallHelper
     {
         if (rootInfo == null) throw new NullReferenceException();
         
-        var path = Path.Combine(rootInfo.InstallPath,
-            DictionaryGameRoot.VersionsPath, rootInfo.InstallName, $"{rootInfo.InstallName}.json");
+        var path = Path.Combine(rootInfo.ClientRootPath,
+            DictionaryGameRoot.VersionsPath, rootInfo.ClientName, $"{rootInfo.ClientName}.json");
         
         File.WriteAllText(path, JsonSerializer.Serialize(json));
     }

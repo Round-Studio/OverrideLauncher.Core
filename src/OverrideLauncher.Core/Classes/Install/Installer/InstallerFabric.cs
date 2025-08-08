@@ -70,9 +70,9 @@ public class InstallerFabric : IDownload
                     FileInfo = new DownloadFileInfo()
                     {
                         Url = x.Url,
-                        FileName = Path.Combine(rootInfo.InstallPath,
+                        FileName = Path.Combine(rootInfo.ClientRootPath,
                             DictionaryGameRoot.VersionsPath,
-                            rootInfo.InstallName, DictionaryGameRoot.ModsPath, x.Filename),
+                            rootInfo.ClientName, DictionaryGameRoot.ModsPath, x.Filename),
                         Hash = x.Hashes["sha1"],
                         Size = (ulong)x.Size
                     }
@@ -129,7 +129,7 @@ public class InstallerFabric : IDownload
         {
             var artifactPath = MavenCoordinateToPath(library.Name);
             var fullUrl = $"{library.Url}/{artifactPath}";
-            var fileName = Path.Combine(ClientRootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, artifactPath);
+            var fileName = Path.Combine(ClientRootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, artifactPath);
 
             downloadList.Files.Add(new DownloadListEntry.DownloadFileItem()
             {

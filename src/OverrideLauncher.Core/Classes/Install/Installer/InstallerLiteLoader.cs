@@ -153,7 +153,7 @@ public class InstallerLiteLoader : IDownload
         {
             var artifactPath = MavenCoordinateToPath(library.Name);
             var fullUrl = $"{library.Url.TrimEnd('/')}/{artifactPath}";
-            var fileName = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, artifactPath);
+            var fileName = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, artifactPath);
 
             downloadList.Files.Add(new DownloadListEntry.DownloadFileItem()
             {

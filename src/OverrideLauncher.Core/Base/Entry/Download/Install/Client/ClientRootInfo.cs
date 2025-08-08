@@ -2,6 +2,6 @@
 
 public class ClientRootInfo
 {
-    public string InstallName { get; set; } = String.Empty;
-    public string InstallPath { get; set; } = String.Empty;
+    public string ClientName { get; set; } = String.Empty;
+    public string ClientRootPath { get; set; } = String.Empty;
 }

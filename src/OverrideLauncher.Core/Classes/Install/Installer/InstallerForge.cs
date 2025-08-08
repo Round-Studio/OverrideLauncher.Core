@@ -42,10 +42,10 @@ public class InstallerForge : IDownload
     public async Task Install(ClientRootInfo rootInfo)
     {
         _rootInfo = rootInfo;
-        _temppath = Path.Combine(rootInfo.InstallPath, DictionaryGameRoot.VersionsPath, rootInfo.InstallName,
+        _temppath = Path.Combine(rootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath, rootInfo.ClientName,
             $"install_temp_dir");
 
-        _installerJarPath = Path.Combine(rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath,"net","minecraftforge",
+        _installerJarPath = Path.Combine(rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,"net","minecraftforge",
             "forge",_installVersion, $"forge-{_installVersion}-installer.jar");
 
         // 步骤1: 下载 installer jar 文件
@@ -131,7 +131,7 @@ public class InstallerForge : IDownload
 
     private void ProcessVersionJson()
     {
-        var forgejsonfile = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.VersionsPath, _rootInfo.InstallName,
+        var forgejsonfile = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath, _rootInfo.ClientName,
             "install_temp_dir", "version.json");
 
         var valjson = InstallHelper.GetClientJsonEntry(_rootInfo);
@@ -265,7 +265,7 @@ public class InstallerForge : IDownload
         {
             if (library.Downloads?.Artifact != null)
             {
-                var libraryPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, library.Downloads.Artifact.Path);
+                var libraryPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, library.Downloads.Artifact.Path);
 
                 librariesToDownload.Add(new DownloadListEntry.DownloadFileItem()
                 {
@@ -485,7 +485,7 @@ public class InstallerForge : IDownload
 
     private async Task<string> GetMainClassFromJar(string jarName)
     {
-        var jarPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(jarName));
+        var jarPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(jarName));
 
         if (!File.Exists(jarPath))
         {
@@ -524,12 +524,12 @@ public class InstallerForge : IDownload
         // 添加 classpath 中的所有 jar
         foreach (var item in processor.Classpath)
         {
-            var jarPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(item));
+            var jarPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(item));
             classpathItems.Add(jarPath);
         }
 
         // 添加主 jar
-        var mainJarPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(processor.Jar));
+        var mainJarPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(processor.Jar));
         classpathItems.Add(mainJarPath);
 
         return string.Join(Path.PathSeparator, classpathItems);
@@ -556,8 +556,8 @@ public class InstallerForge : IDownload
 
             // 替换固定模板
             replacedArg = replacedArg.Replace("{INSTALLER}", _installerJarPath);
-            replacedArg = replacedArg.Replace("{ROOT}", _rootInfo.InstallPath);
-            replacedArg = replacedArg.Replace("{MINECRAFT_JAR}", Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.VersionsPath, _rootInfo.InstallName, $"{_rootInfo.InstallName}.jar"));
+            replacedArg = replacedArg.Replace("{ROOT}", _rootInfo.ClientRootPath);
+            replacedArg = replacedArg.Replace("{MINECRAFT_JAR}", Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath, _rootInfo.ClientName, $"{_rootInfo.ClientName}.jar"));
             replacedArg = replacedArg.Replace("{SIDE}", "client");
 
             // 处理相对路径（以 / 开头的路径是相对于 data 目录的）
@@ -570,7 +570,7 @@ public class InstallerForge : IDownload
             if (replacedArg.StartsWith("[") && replacedArg.EndsWith("]"))
             {
                 var mavenCoord = replacedArg.Substring(1, replacedArg.Length - 2);
-                replacedArg = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(mavenCoord));
+                replacedArg = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath, ConvertMavenNameToPath(mavenCoord));
             }
 
             replacedArgs.Add(replacedArg);
@@ -604,7 +604,7 @@ public class InstallerForge : IDownload
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
-            WorkingDirectory = _rootInfo.InstallPath
+            WorkingDirectory = _rootInfo.ClientRootPath
         };
 
         using var process = new Process { StartInfo = processStartInfo };
@@ -727,7 +727,7 @@ public class InstallerForge : IDownload
         Console.WriteLine("验证 Forge 安装结果...");
 
         // 检查多种可能的 Forge jar 文件
-        var forgeLibPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath,
+        var forgeLibPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
             "net", "minecraftforge", "forge", _installVersion);
 
         var jarVariants = new[]
@@ -756,8 +756,8 @@ public class InstallerForge : IDownload
         }
 
         // 检查版本 JSON 文件
-        var versionJsonPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.VersionsPath,
-            _rootInfo.InstallName, $"{_rootInfo.InstallName}.json");
+        var versionJsonPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath,
+            _rootInfo.ClientName, $"{_rootInfo.ClientName}.json");
 
         if (!File.Exists(versionJsonPath))
         {
@@ -809,7 +809,7 @@ public class InstallerForge : IDownload
             $"forge-{_installVersion}-client.jar"
         };
 
-        var forgeLibPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.LibrariesPath,
+        var forgeLibPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
             "net", "minecraftforge", "forge", _installVersion);
 
         string? existingJarPath = null;
@@ -828,8 +828,8 @@ public class InstallerForge : IDownload
         }
 
         // 确定需要的目标 jar 文件名（根据 version.json 中的引用）
-        var versionJsonPath = Path.Combine(_rootInfo.InstallPath, DictionaryGameRoot.VersionsPath,
-            _rootInfo.InstallName, $"{_rootInfo.InstallName}.json");
+        var versionJsonPath = Path.Combine(_rootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath,
+            _rootInfo.ClientName, $"{_rootInfo.ClientName}.json");
 
         if (File.Exists(versionJsonPath))
         {
