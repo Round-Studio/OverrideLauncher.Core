@@ -13,7 +13,7 @@ using OverrideLauncher.Core.Classes.Parameter;
 using OverrideLauncher.Core.Classes.Reader;
 
 var installname = "1.20.1";
-var installroot = "D:\\mjsource";
+var installroot = "D:\\.minecraft";
 
 Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
 
@@ -91,14 +91,13 @@ if (choose.Key == ConsoleKey.D3)
     Console.WriteLine($"\n开始下载 Minecraft {installname}...");
     var stopwatch = Stopwatch.StartNew();
 
-    // var fabricman = await InstallHelper.GetVersionFabricManifest(installname);
+    var fabricman = await InstallHelper.GetVersionFabricManifest(installname);
 
     InstallerCollection install = new InstallerCollection(new InstallerCollectionEntry()
     {
         VanillaManifest = await InstallHelper.TryingFindVersion(installname),
-        /*FabricVersion = fabricman.First(),
-        FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()*/
-        LiteLoaderVersion = InstallHelper.TryGetVersionLiteLoaderVersions(installname).Result.First()
+        FabricVersion = fabricman.First(),
+        FabricApiVersion = InstallHelper.TryGetFabricApiVersions(installname).Result.First()
     });
 
     var lastProgress = 0.0;

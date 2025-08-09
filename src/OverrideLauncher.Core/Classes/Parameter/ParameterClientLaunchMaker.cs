@@ -132,6 +132,15 @@ public class ParameterClientLaunchMaker
                     }
                 }
             }
+
+            if (lib.Downloads == null)
+            {
+                if (!string.IsNullOrEmpty(lib.Name))
+                {
+                    res.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
+                        InstallHelper.ConvertToMavenPath(lib.Name)));
+                }
+            }
         });
         
         res.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.VersionsPath,
