@@ -2,7 +2,7 @@
     <PropertyGroup>
       <Version>$([System.DateTime]::Now.ToString(yy.MM.dd.HHmm))</Version>
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-      <PackageIcon>logo.png</PackageIcon>
+      <PackageIcon>pack_logo.png</PackageIcon>
       <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
       <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
       <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="logo.png">
+      <None Update="pack_logo.png">
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
