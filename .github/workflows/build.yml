@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Test
-      run: dotnet test ./src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
+      run: dotnet test src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
   test_build:
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Test
-      run: dotnet build ./src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
+      run: dotnet build src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
   build:
     runs-on: ubuntu-latest
     needs: [test, test_build]
@@ -47,13 +47,13 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Build OverrideLauncher.Core
-      run: dotnet build ./src/OverrideLauncher.Core/OverrideLauncher.Core.csproj ${{ env.compile-flags }}
+      run: dotnet build src/OverrideLauncher.Core/OverrideLauncher.Core.csproj ${{ env.compile-flags }}
     - name: Set Version
       run : |
         current_date=$(date +"%y.%m.%d.%H%M")
-        sed -i "s/<Version>[^<]*<\/Version>/<Version>$current_date<\/Version>/" ./src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
+        sed -i "s/<Version>[^<]*<\/Version>/<Version>$current_date<\/Version>/" src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
     - name: Publish OverrideLauncher.Core
       uses: brandedoutcast/publish-nuget@v2.5.2
       with: 
-        PROJECT_FILE_PATH: ./src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
+        PROJECT_FILE_PATH: src/OverrideLauncher.Core/OverrideLauncher.Core.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
