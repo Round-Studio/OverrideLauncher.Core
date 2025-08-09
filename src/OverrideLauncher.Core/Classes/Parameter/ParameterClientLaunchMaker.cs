@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json;
 using OverrideLauncher.Core.Base.Dictionary;
 using OverrideLauncher.Core.Base.Entry.Download.Install.Client;
 using OverrideLauncher.Core.Base.Entry.Info;
@@ -12,6 +13,8 @@ public class ParameterClientLaunchMaker
     private ClientRunnerInfo _info;
     private ClientInfo _ClientInfo;
     private string _nativePath = "";
+
+    private List<string> _nativeFiles = new();
     public ParameterClientLaunchMaker(ClientRunnerInfo info)
     {
         _info = info;
@@ -20,11 +23,21 @@ public class ParameterClientLaunchMaker
         _nativePath = Path.Combine(_info.ClientRootInfo.ClientRootPath, DictionaryGameRoot.VersionsPath,
             _info.ClientRootInfo.ClientName, DictionaryGameRoot.NativesPath);
         
-        Console.WriteLine(SplicingCPArguments());
+        Console.WriteLine(Make());
+#if DEBUG
+        File.WriteAllText("D:\\test.bat",Make());
+#endif
     }
     
-    public void Make()
+    public (List<string>,string) GetNativeInfo()
     {
+        return (_nativeFiles, _nativePath);
+    }
+    
+    public string Make()
+    {
+        var ResultArgs = new List<string>();
+        
         Dictionary<string, string> Args = new Dictionary<string, string>()
         {
             ["${natives_directory}"] = $"\"{_nativePath}\"",
@@ -45,18 +58,43 @@ public class ParameterClientLaunchMaker
             ["${launcher_version}"] = _info.LauncherVersion,
             ["${auth_player_name}"] = _info.Account.UserName,
             ["${user_properties}"] = "{}",
+            ["${clientid}"] = _ClientInfo.ClientName
         };
         
         List<string> RequiredJVMArgs = new()
         {
+            "${main_class}",
+            "${classpath}",
+            "-cp",
+            "-Djna.tmpdir=${natives_directory}",
             "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
             "-Djava.library.path=${natives_directory}",
+            "-Dorg.lwjgl.librarypath=${natives_directory}",
             "-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}",
-            "-Dio.netty.native.workdir=${natives_directory}",
-            "-Djna.tmpdir=${natives_directory}",
-            "-cp",
-            "${classpath}"
+            "-Dio.netty.native.workdir=${natives_directory}"
         };
+
+        var spi = SplicingArgs();
+        RequiredJVMArgs.ForEach(x =>
+        {
+            if (!spi.Contains(x))
+            {
+                spi.Insert(0, x);
+            }
+        });
+        
+        spi.ForEach(x =>
+        {
+            var res_str = x;
+            foreach (var (key, value) in Args)
+            {
+                res_str = res_str.Replace(key, value);
+            }
+            
+            ResultArgs.Add(res_str);
+        });
+
+        return string.Join(' ', ResultArgs);
     }
 
     private string SplicingCPArguments()
@@ -68,21 +106,67 @@ public class ParameterClientLaunchMaker
             if (lib?.Downloads != null)
             {
                 if (lib.Downloads?.Artifact != null)
-                {
-                    if (!lib.Downloads.Artifact.Path.Contains("native"))
+                    if (InstallHelper.IsThisSystemFile(lib.Downloads.Artifact.Path))
                     {
-                        if (InstallHelper.IsThisSystemFile(lib.Downloads.Artifact.Path))
+                        if (!lib.Downloads.Artifact.Path.Contains("native"))
                         {
                             res.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
+                                lib.Downloads.Artifact.Path).Replace("3.2.1","3.2.2"));
+                        }
+                        else
+                        {
+                            _nativeFiles.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
                                 lib.Downloads.Artifact.Path));
+                        }
+                    }
+
+                if (lib.Downloads?.Classifiers != null)
+                {
+                    foreach (var classifier in lib.Downloads?.Classifiers)
+                    {
+                        if (InstallHelper.IsThisSystemFile(classifier.Value.Path))
+                        {
+                            _nativeFiles.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.LibrariesPath,
+                                classifier.Value.Path));
                         }
                     }
                 }
             }
         });
+        
         res.Add(Path.Combine(_ClientInfo.ClientRootPath, DictionaryGameRoot.VersionsPath,
             _ClientInfo.ClientName, $"{_ClientInfo.ClientName}.jar"));
 
         return string.Join(';', res);
+    }
+
+    private List<string> SplicingArgs()
+    {
+        var result = new List<string>();
+
+        if (_ClientInfo.ManifestClientJson?.Arguments == null)
+        {
+            result.Add(_ClientInfo?.ManifestClientJson.MinecraftArguments);
+        }
+        else
+        {
+            if (_ClientInfo.ManifestClientJson.Arguments?.Jvm != null)
+                _ClientInfo.ManifestClientJson.Arguments.Jvm.ForEach(x =>
+                {
+                    if (x is JsonElement strruleElement && strruleElement.ValueKind == JsonValueKind.String)
+                        result.Add(x.ToString());
+                });
+
+            result.Add("${main_class}");
+            
+            if (_ClientInfo.ManifestClientJson.Arguments?.Game != null)
+                _ClientInfo.ManifestClientJson.Arguments.Game.ForEach(x =>
+                {
+                    if (x is JsonElement strruleElement && strruleElement.ValueKind == JsonValueKind.String)
+                        result.Add(x.ToString());
+                });
+        }
+
+        return result;
     }
 }

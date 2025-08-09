@@ -12,7 +12,7 @@ public class ZipUtil
         Directory.CreateDirectory(outputPath);
     
         // 解压整个 ZIP 文件
-        ZipFile.ExtractToDirectory(zipFilePath, outputPath);
+        ZipFile.ExtractToDirectory(zipFilePath, outputPath, true);
     }
     public static void AddJsonToZip(string zipFilePath, string jsonEntryName, object data)
     {

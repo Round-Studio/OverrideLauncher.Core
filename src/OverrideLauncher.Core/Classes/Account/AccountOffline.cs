@@ -12,8 +12,9 @@ public class AccountOffline : Base.Entry.Account.Account, ILogin
         this.AccountType = AccountType.Offline;
         this.UserName = userName;
         this.LoginTime = DateTime.Now;
-        this.RefreshToken = String.Empty;
+        this.RefreshToken = NameToMcOfflineUUID(userName).ToString();
         this.UUID = NameToMcOfflineUUID(userName).ToString();
+        this.Token = NameToMcOfflineUUID(userName).ToString();
     }
     public Base.Entry.Account.Account Authenticate()
     {

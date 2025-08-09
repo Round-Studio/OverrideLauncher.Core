@@ -5,12 +5,15 @@ using OverrideLauncher.Core.Base.Dictionary;
 using System.Diagnostics;
 using OverrideLauncher.Core.Base.Entry.Download.Install;
 using OverrideLauncher.Core.Base.Entry.Info;
+using OverrideLauncher.Core.Base.Entry.Info.Java;
+using OverrideLauncher.Core.Classes.Account;
 using OverrideLauncher.Core.Classes.Install.Installer;
+using OverrideLauncher.Core.Classes.Launch.Runner;
 using OverrideLauncher.Core.Classes.Parameter;
 using OverrideLauncher.Core.Classes.Reader;
 
 var installname = "1.20.1";
-var installroot = "D:\\testmc";
+var installroot = "D:\\mjsource";
 
 Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
 
@@ -176,12 +179,24 @@ if (choose.Key == ConsoleKey.D6)
 
 if (choose.Key == ConsoleKey.D7)
 {
-    var info = new ParameterClientLaunchMaker(new ClientRunnerInfo()
+    var info = new RunnerClient(new ClientRunnerInfo()
     {
         ClientRootInfo = new ClientRootInfo()
         {
             ClientName = installname,
             ClientRootPath = installroot
+        },
+        Account = new AccountOffline("Ove").Authenticate(),
+        LauncherVersion = "2.0",
+        JvmInfo = new JavaInfo()
+        {
+            Path = "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\java.exe"
         }
     });
+    info.OutputDataReceived += (sender, e) =>
+    {
+        Console.WriteLine(e.Data);
+    };
+    info.Start();
+    info.WaitForExit();
 }

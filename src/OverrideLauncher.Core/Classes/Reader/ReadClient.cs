@@ -30,7 +30,7 @@ public class ReadClient : ClientInfo
                 $"{ManifestClientJson.AssetIndex.Id}.json")))
             throw new FileNotFoundException($"未找到 资源引索 {ManifestClientJson.AssetIndex.Id}.json");
         if (ManifestClientJson?.MinimumLauncherVersion == null || ManifestClientJson?.MinimumLauncherVersion <= 7)
-            throw new NullReferenceException("Java 版本配置异常");
+            ManifestClientJson.MinimumLauncherVersion = 8;
         
         ManifestClientAssetsJson = JsonSerializer.Deserialize<ManifestClientAssetsJson>(
             File.ReadAllText(Path.Combine(ClientRootPath, DictionaryGameRoot.AssetsIndexPath,

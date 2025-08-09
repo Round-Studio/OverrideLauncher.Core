@@ -18,7 +18,15 @@ public class InstallHelper
     public static bool IsThisSystemFile(string path)
     {
         var isthisSystem = true;
-        GetOtherSystem().ForEach(x => { isthisSystem = !path.Contains(x); });
+        
+        GetOtherSystem().ForEach(x =>
+        {
+            if (path.Contains(x))
+            {
+                isthisSystem = false;
+                return;
+            }
+        });
         
         return isthisSystem;
     }
