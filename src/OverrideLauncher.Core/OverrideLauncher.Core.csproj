@@ -1,9 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+      <Version>$([System.DateTime]::Now.ToString(yy.MM.dd.HHmm))</Version>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <PackageIcon>logo.png</PackageIcon>
+    </PropertyGroup>
+    <PropertyGroup>
+      <PackageProjectUrl>https://github.com/Round-Studio/OverrideLauncher.Core</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/Round-Studio/OverrideLauncher.Core</RepositoryUrl>
+      <Description>新一代 MC 启动器，迅速、快速、轻便！</Description>
+      <TargetFrameworks>net8.0</TargetFrameworks>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Authors>Round-Studio</Authors>
+      <LangVersion>latest</LangVersion>
+      <Title>OverrideLauncher</Title>
+      <Nullable>disable</Nullable>
+      <GenerateDocumentationFile>False</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +23,13 @@
 
     <ItemGroup>
       <Compile Remove="Classes\Install\DownloadPerformanceMonitor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="logo.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
