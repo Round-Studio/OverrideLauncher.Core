@@ -8,4 +8,5 @@ public class DictionaryGameRoot
     public static string AssetsObjectPath = "assets/objects";
     public static string VersionsPath = "versions";
     public static string ModsPath = "mods";
+    public static string NativesPath = "natives";
 }

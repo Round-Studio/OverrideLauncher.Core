@@ -6,6 +6,7 @@ using System.Diagnostics;
 using OverrideLauncher.Core.Base.Entry.Download.Install;
 using OverrideLauncher.Core.Base.Entry.Info;
 using OverrideLauncher.Core.Classes.Install.Installer;
+using OverrideLauncher.Core.Classes.Parameter;
 using OverrideLauncher.Core.Classes.Reader;
 
 var installname = "1.20.1";
@@ -30,6 +31,7 @@ Console.WriteLine("3. 复合安装器安装游戏");
 Console.WriteLine("4. 安装 Forge");
 Console.WriteLine("5. 安装 LiteLoader");
 Console.WriteLine("6. 读取游戏信息");
+Console.WriteLine("7. 测试启动类");
 
 Console.Write("\n你选择：");
 
@@ -170,4 +172,16 @@ if (choose.Key == ConsoleKey.D6)
     Console.WriteLine($"系统: {config.System}");
     Console.WriteLine($"加载器: {string.Join(", ", config.ModLoaders)}");
     Console.WriteLine($"文件是否完整: {config.FilesFullRange}");
+}
+
+if (choose.Key == ConsoleKey.D7)
+{
+    var info = new ParameterClientLaunchMaker(new ClientRunnerInfo()
+    {
+        ClientRootInfo = new ClientRootInfo()
+        {
+            ClientName = installname,
+            ClientRootPath = installroot
+        }
+    });
 }
