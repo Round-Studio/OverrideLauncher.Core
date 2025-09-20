@@ -60,14 +60,15 @@ public class ParameterClientLaunchMaker
             ["${user_properties}"] = "{}",
             ["${clientid}"] = _ClientInfo.ClientName
         };
-        
+
         List<string> RequiredJVMArgs = new()
         {
             "${main_class}",
             "${classpath}",
             "-cp",
             "-Djna.tmpdir=${natives_directory}",
-            "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
+            $"{(_info.JvmInfo.IsGC ? "-XX:+UseG1GC" : "")} -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
+            $"-Xmx{_info.JvmInfo.MemorySize}m",
             "-Djava.library.path=${natives_directory}",
             "-Dorg.lwjgl.librarypath=${natives_directory}",
             "-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}",
@@ -93,6 +94,8 @@ public class ParameterClientLaunchMaker
             
             ResultArgs.Add(res_str);
         });
+        
+        if(_info.IsDemo) ResultArgs.Add("--demo");
 
         return string.Join(' ', ResultArgs);
     }
