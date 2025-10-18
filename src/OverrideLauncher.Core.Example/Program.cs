@@ -11,6 +11,7 @@ using OverrideLauncher.Core.Classes.Install.Installer;
 using OverrideLauncher.Core.Classes.Launch.Runner;
 using OverrideLauncher.Core.Classes.Parameter;
 using OverrideLauncher.Core.Classes.Reader;
+using OverrideLauncher.Core.Classes.Utilities;
 
 var installname = "1.20.1";
 var installroot = "D:\\.minecraft";
@@ -19,7 +20,7 @@ Console.WriteLine("=== OverrideLauncher 高速下载测试 ===");
 
 // 自动使用 官方 镜像源
 DictionaryDownloadHost.SwitchMirror("official"); // 官方: official
-                                                // BMCL API: bmclapi
+                                                 // BMCL API: bmclapi
 Console.WriteLine($"使用镜像源: {DictionaryDownloadHost.GetCurrentMirror().Name}");
 
 // 自定义下载版本
@@ -187,10 +188,9 @@ if (choose.Key == ConsoleKey.D7)
         },
         Account = new AccountOffline("Ove").Authenticate(),
         LauncherVersion = "2.0",
-        JvmInfo = new JavaInfo()
-        {
-            Path = "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\java.exe"
-        }
+        LauncherInfo = "RMCL 4.0 (By Override.Core)",
+        JvmInfo = JavaUtil.GetJavaListAsync().Result[0],
+        WindowInfo = new ClientWindowInfo().GetWindowSize(ClientWindowInfo.WindowInfo.w1920h1080)
     });
     info.OutputDataReceived += (sender, e) =>
     {

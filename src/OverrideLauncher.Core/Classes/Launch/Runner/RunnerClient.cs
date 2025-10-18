@@ -27,7 +27,7 @@ public class RunnerClient : Process
         
         this.StartInfo = new ProcessStartInfo()
         {
-            FileName = _info.JvmInfo.Path,
+            FileName = _info.JvmInfo.JavaPath,
             Arguments = maker.Make()
         };
     }

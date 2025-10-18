@@ -67,8 +67,8 @@ public class ParameterClientLaunchMaker
             "${classpath}",
             "-cp",
             "-Djna.tmpdir=${natives_directory}",
-            $"{(_info.JvmInfo.IsGC ? "-XX:+UseG1GC" : "")} -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
-            $"-Xmx{_info.JvmInfo.MemorySize}m",
+            /*$"{(_info.JvmInfo.IsGC ? "-XX:+UseG1GC" : "")} -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow",
+            $"-Xmx{_info.JvmInfo.MemorySize}m",*/
             "-Djava.library.path=${natives_directory}",
             "-Dorg.lwjgl.librarypath=${natives_directory}",
             "-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}",
@@ -96,6 +96,10 @@ public class ParameterClientLaunchMaker
         });
         
         if(_info.IsDemo) ResultArgs.Add("--demo");
+        ResultArgs.Add("-width");
+        ResultArgs.Add(_info.WindowInfo.Width.ToString());
+        ResultArgs.Add("-height");
+        ResultArgs.Add(_info.WindowInfo.Height.ToString());
 
         return string.Join(' ', ResultArgs);
     }

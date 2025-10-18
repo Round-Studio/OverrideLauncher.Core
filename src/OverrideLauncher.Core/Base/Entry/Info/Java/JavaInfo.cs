@@ -1,8 +1,16 @@
 ﻿namespace OverrideLauncher.Core.Base.Entry.Info.Java;
 
 public class JavaInfo
-{
-    public string Path { get; set; }
-    public bool IsGC { get; set; } = true;
-    public int MemorySize { get; set; } = 1024;
+{ 
+    public bool Is64bit { get; init; }
+    public string JavaPath { get; init; }
+    public string JavaType { get; init; }
+    public string JavaVersion { get; init; }
+    public int MajorVersion { get; init; }
+
+    public string JavaFolder => Path.GetDirectoryName(JavaPath);
+
+    public override string ToString() {
+        return $"{JavaVersion} - {JavaType} - {JavaPath}";
+    }
 }

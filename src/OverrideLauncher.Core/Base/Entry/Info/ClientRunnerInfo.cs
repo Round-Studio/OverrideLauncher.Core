@@ -11,4 +11,5 @@ public class ClientRunnerInfo
     public string LauncherVersion { get; set; }
     public bool IsDemo { get; set; } = false;
     public JavaInfo JvmInfo { get; set; }
+    public ClientWindowInfo WindowInfo { get; set; } = new();
 }
