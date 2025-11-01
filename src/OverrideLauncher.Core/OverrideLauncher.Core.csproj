@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Downloader" Version="4.0.1-beta" />
+      <PackageReference Include="Downloader" Version="4.0.3" />
     </ItemGroup>
 
     <ItemGroup>
