@@ -8,6 +8,7 @@ using OverrideLauncher.Core.Base.Entry.Info;
 using OverrideLauncher.Core.Base.Entry.Info.Java;
 using OverrideLauncher.Core.Classes.Account;
 using OverrideLauncher.Core.Classes.Install.Installer;
+using OverrideLauncher.Core.Classes.Install.Java;
 using OverrideLauncher.Core.Classes.Launch.Runner;
 using OverrideLauncher.Core.Classes.Parameter;
 using OverrideLauncher.Core.Classes.Reader;
@@ -36,6 +37,7 @@ Console.WriteLine("4. 安装 Forge");
 Console.WriteLine("5. 安装 LiteLoader");
 Console.WriteLine("6. 读取游戏信息");
 Console.WriteLine("7. 测试启动类");
+Console.WriteLine("8. 获取所有可下载的 Java 版本");
 
 Console.Write("\n你选择：");
 
@@ -198,4 +200,13 @@ if (choose.Key == ConsoleKey.D7)
     };
     info.Start();
     info.WaitForExit();
+}
+
+if (choose.Key == ConsoleKey.D8)
+{
+    var lst = await new JdkService().GetJdksAsync();
+    lst.Jdks.ForEach(x =>
+    {
+        if (InstallHelper.IsThisSystemFile(x.Packages[0].Os)) Console.WriteLine(x.SuggestedSdkName);
+    });
 }
